@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en" class="h-100">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
+    <meta name="generator" content="Hugo 0.88.1">
+    <title>Student site</title>
+
+
+
+    <script src="https://unpkg.com/feather-icons"></script>
+
+    <!-- Bootstrap core CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+
+    <!-- Favicons -->
+    <meta name="theme-color" content="#7952b3">
+
+
+
+
+    <!-- Custom styles for this template -->
+    <link href="https://getbootstrap.com/docs/5.1/examples/dashboard/dashboard.css" rel="stylesheet">
+</head>
+<body class="">
+
+
+<header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
+    <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="#">Student site</a>
+    <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+<!--    <input class="form-control form-control-dark w-100" type="text" placeholder="Search" aria-label="Search">-->
+    <div class="navbar-nav">
+        <div class="nav-item text-nowrap">
+            <a class="nav-link px-3" href="#">Sign out</a>
+        </div>
+    </div>
+</header>
+
+    <<div class="container-fluid">
+        <div class="row">
+            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+                <div class="position-sticky pt-3">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link " aria-current="page" href="#">
+                                <span data-feather="home"></span>
+                                Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item ">
+                            <a class="nav-link " href="#">
+                                <span data-feather="airplay"></span>
+                                Subjects
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#">
+                                <span data-feather="edit"></span>
+                                Topics
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">
+                                <span data-feather="save"></span>
+                                Todos
+                            </a>
+                        </li>
+
+                    </ul>
+
+                </div>
+            </nav>
+
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="row border-bottom">
+                    <div class="col-2">
+                        <h2 class="pb-2 ">Topics</h2>
+                    </div>
+                    <div class="col-10">
+                        <button class="btn btn-outline-secondary" type="button" id="button-addon3">Add a post</button>
+                    </div>
+                </div>
+                <div class="input-group py-3 mb-3">
+                    <input type="text" class="form-control" placeholder="Search for topic" aria-label="Search for subject" aria-describedby="button-addon2">
+                    <button class="btn btn-outline-secondary" type="button" id="button-addon2">Search</button>
+                </div>
+
+<!--                <canvas class="my-4 w-100" id="myChart" width="900" height="380"></canvas>-->
+
+<!--                <div class="container px-4 py-5" id="hanging-icons">-->
+
+                    <div class="row g-4 py-2 row-cols-1 row-cols-lg-3">
+                        <div class="col">
+                            <div class="card mb-4 rounded-3 shadow-sm text-center">
+                                <div class="card-header py-3">
+                                    <h4 class="my-0 fw-normal">Study in America</h4>
+                                </div>
+                                <div class="card-body">
+                                    <p>Topic about studying in America. Write your posts or ask questions!</p>
+                                    <button type="button" class="w-100 btn btn-lg btn-outline-primary">See posts</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="card mb-4 rounded-3 shadow-sm text-center">
+                                <div class="card-header py-3">
+                                    <h4 class="my-0 fw-normal">Internships in Estonia</h4>
+                                </div>
+                                <div class="card-body">
+                                    <p>Topic about internships in Estonia, ask your questions about internships or write your posts!</p>
+                                    <button type="button" class="w-100 btn btn-lg btn-outline-primary">See posts</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="card mb-4 rounded-3 shadow-sm text-center">
+                                <div class="card-header py-3">
+                                    <h4 class="my-0 fw-normal">Science</h4>
+                                </div>
+                                <div class="card-body">
+                                    <p>Topic about science, maybe about Elon Musk?!</p>
+                                    <button type="button" class="w-100 btn btn-lg btn-outline-primary">See posts</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <footer class="mt-auto text-white-50">
+<!--        <p>Cover template for <a href="https://getbootstrap.com/" class="text-white">Bootstrap</a>, by <a href="https://twitter.com/mdo" class="text-white">@mdo</a>.</p>-->
+    </footer>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+<script>
+    feather.replace()
+</script>
+
+</body>
+</html>
