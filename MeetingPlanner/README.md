@@ -1,6 +1,12 @@
-dotnet ef migrations --project DAL.App.EF --startup-project WebApp add Initial
-dotnet ef database --project DAL.App.EF --startup-project WebApp update
-dotnet ef database --project DAL.App.EF --startup-project WebApp drop
+dotnet ef migrations --project App.DAL.EF --startup-project WebApp add Initial
+dotnet ef database --project App.DAL.EF --startup-project WebApp update
+dotnet ef database --project App.DAL.EF --startup-project WebApp drop
+
+dotnet aspnet-codegenerator controller -name MeetingsController        -actions -m  App.Domain.Meeting        -dc App.DAL.EF.AppDbContext -outDir Controllers --useDefaultLayout --useAsyncActions --referenceScriptLibraries -f
+dotnet aspnet-codegenerator controller -name MeetingOptionsController        -actions -m  App.Domain.MeetingOption        -dc App.DAL.EF.AppDbContext -outDir Controllers --useDefaultLayout --useAsyncActions --referenceScriptLibraries -f
+
+
+
 
             dotnet ef migrations add InitialMigration --project BookStoreApi
             dotnet ef database update --project BookStoreApi

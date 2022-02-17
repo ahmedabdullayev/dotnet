@@ -11,6 +11,7 @@ public class Meeting: DomainEntityMetaId
 
     [MaxLength(4096)]
     public string Description { get; set; } = default!;
+    
     [MaxLength(512)]
     public string Location { get; set; } = default!;
 
@@ -21,13 +22,13 @@ public class Meeting: DomainEntityMetaId
     public bool LimitToSingleVote { get; set; } = true;
 
     public bool IsDataHidden { get; set; }
-    
-    public DateTime AvailableFrom { get; set; }
 
+    public DateTime AvailableFrom { get; set; }
     public DateTime DeadLine { get; set; }
 
     public Guid AppUserId { get; set; }
     public AppUser? AppUser { get; set; }
 
     public ICollection<MeetingOption>? MeetingOptions { get; set; }
+
 }

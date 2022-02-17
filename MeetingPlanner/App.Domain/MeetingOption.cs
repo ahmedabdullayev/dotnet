@@ -10,7 +10,9 @@ public class MeetingOption : DomainEntityMetaId
 
     [MaxLength(512)]
     public string Description { get; set; } = default!;
+
     
     public Guid MeetingId { get; set; }
     public Meeting? Meeting { get; set; }
+
 }
