@@ -1,0 +1,1 @@
+dotnet aspnet-codegenerator controller -name PersonsController        -actions -m  Person        -dc AppDbContext -outDir Controllers --useDefaultLayout --useAsyncActions --referenceScriptLibraries -f
