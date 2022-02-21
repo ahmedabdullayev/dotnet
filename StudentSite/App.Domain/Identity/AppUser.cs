@@ -5,10 +5,10 @@ namespace App.Domain.Identity;
 
 public class AppUser : BaseUser
 {
-    [StringLength(128, MinimumLength = 1)]
-    public string Firstname { get; set; } = default!;
-    [StringLength(128, MinimumLength = 1)]
-    public string Lastname { get; set; } = default!;
+    [StringLength(128)]
+    public string? Firstname { get; set; } = default!;
+    [StringLength(128)]
+    public string? Lastname { get; set; }
 
     public ICollection<Quiz>? Quizzes { get; set; }
     public ICollection<UserChoice>? UserChoices { get; set; }
