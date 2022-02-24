@@ -10,8 +10,9 @@ using App.DAL.EF;
 using App.Domain;
 using WebApp.ViewModels;
 
-namespace WebApp.Controllers
+namespace WebApp.Areas.Admin.Controllers
 {
+    [Area("Admin")]
     public class QuizzesController : Controller
     {
         private readonly AppDbContext _context;
@@ -21,14 +22,14 @@ namespace WebApp.Controllers
             _context = context;
         }
 
-        // GET: Quizzes
+        // GET: Admin/Quizzes
         public async Task<IActionResult> Index()
         {
             var appDbContext = _context.Quizzes.Include(q => q.AppUser).Include(q => q.Subject);
             return View(await appDbContext.ToListAsync());
         }
 
-        // GET: Quizzes/Details/5
+        // GET: Admin/Quizzes/Details/5
         public async Task<IActionResult> Details(Guid? id)
         {
             if (id == null)
@@ -48,17 +49,16 @@ namespace WebApp.Controllers
             return View(quiz);
         }
 
-        // GET: Quizzes/Create
+        // GET: Admin/Quizzes/Create
         public async Task<IActionResult> Create()
         {
-            // ViewData["SubjectId"] = new SelectList(_context.Subjects, "Id", "Description");
             var quizVm = new QuizzesCreateEditVM();
             quizVm.SubjectSelectList = new SelectList(await _context.Subjects.ToListAsync(), nameof(Quiz.Id), nameof(Quiz.Name));
             ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id");
             return View(quizVm);
         }
 
-        // POST: Quizzes/Create
+        // POST: Admin/Quizzes/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
@@ -77,7 +77,7 @@ namespace WebApp.Controllers
             return View(quizVm);
         }
 
-        // GET: Quizzes/Edit/5
+        // GET: Admin/Quizzes/Edit/5
         public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null)
@@ -90,12 +90,12 @@ namespace WebApp.Controllers
             {
                 return NotFound();
             }
-            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Firstname", quiz.AppUserId);
+            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id", quiz.AppUserId);
             ViewData["SubjectId"] = new SelectList(_context.Subjects, "Id", "Description", quiz.SubjectId);
             return View(quiz);
         }
 
-        // POST: Quizzes/Edit/5
+        // POST: Admin/Quizzes/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
@@ -127,12 +127,12 @@ namespace WebApp.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Firstname", quiz.AppUserId);
+            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id", quiz.AppUserId);
             ViewData["SubjectId"] = new SelectList(_context.Subjects, "Id", "Description", quiz.SubjectId);
             return View(quiz);
         }
 
-        // GET: Quizzes/Delete/5
+        // GET: Admin/Quizzes/Delete/5
         public async Task<IActionResult> Delete(Guid? id)
         {
             if (id == null)
@@ -152,7 +152,7 @@ namespace WebApp.Controllers
             return View(quiz);
         }
 
-        // POST: Quizzes/Delete/5
+        // POST: Admin/Quizzes/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
