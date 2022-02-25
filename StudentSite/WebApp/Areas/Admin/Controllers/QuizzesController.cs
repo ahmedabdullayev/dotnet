@@ -53,7 +53,7 @@ namespace WebApp.Areas.Admin.Controllers
         public async Task<IActionResult> Create()
         {
             var quizVm = new QuizzesCreateEditVM();
-            quizVm.SubjectSelectList = new SelectList(await _context.Subjects.ToListAsync(), nameof(Quiz.Id), nameof(Quiz.Name));
+            quizVm.SubjectSelectList = new SelectList(await _context.Subjects.ToListAsync(), nameof(Subject.Id), nameof(Subject.Name));
             ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id");
             return View(quizVm);
         }
@@ -72,7 +72,7 @@ namespace WebApp.Areas.Admin.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Firstname", quizVm.Quiz.AppUserId);
-            quizVm.SubjectSelectList = new SelectList(await _context.Subjects.ToListAsync(), nameof(Quiz.Id), nameof(Quiz.Name), quizVm.Quiz.SubjectId);
+            quizVm.SubjectSelectList = new SelectList(await _context.Subjects.ToListAsync(), nameof(Subject.Id), nameof(Subject.Name), quizVm.Quiz.SubjectId);
             // ViewData["SubjectId"] = new SelectList(_context.Subjects, "Id", "Description", quiz.SubjectId);
             return View(quizVm);
         }

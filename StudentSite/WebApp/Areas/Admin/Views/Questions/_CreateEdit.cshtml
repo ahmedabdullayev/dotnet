@@ -1,0 +1,11 @@
+@model WebApp.ViewModels.QuestionsCreateEditVM
+
+<div class="form-group">
+    <label asp-for="Question.QuestionText" class="control-label"></label>
+    <input asp-for="Question.QuestionText" class="form-control" />
+    <span asp-validation-for="Question.QuestionText" class="text-danger"></span>
+</div>
+<div class="form-group">
+    <label asp-for="Question.QuizId" class="control-label"></label>
+    <select asp-for="Question.QuizId" class ="form-control" asp-items="Model!.QuizSelectList"></select>
+</div>

@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using App.DAL.EF;
 using App.Domain;
+using WebApp.ViewModels;
 
 namespace WebApp.Areas.Admin.Controllers
 {
@@ -50,8 +51,9 @@ namespace WebApp.Areas.Admin.Controllers
         // GET: Admin/Questions/Create
         public IActionResult Create()
         {
-            ViewData["QuizId"] = new SelectList(_context.Quizzes, "Id", "Description");
-            return View();
+            var questionVm = new QuestionsCreateEditVM();
+            questionVm.QuizSelectList = new SelectList(_context.Quizzes, nameof(Quiz.Id), nameof(Quiz.Name));
+            return View(questionVm);
         }
 
         // POST: Admin/Questions/Create
@@ -59,17 +61,17 @@ namespace WebApp.Areas.Admin.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("QuestionText,QuizId,Id")] Question question)
+        public async Task<IActionResult> Create(QuestionsCreateEditVM questionVm)
         {
             if (ModelState.IsValid)
             {
-                question.Id = Guid.NewGuid();
-                _context.Add(question);
+                
+                _context.Add(questionVm.Question);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["QuizId"] = new SelectList(_context.Quizzes, "Id", "Description", question.QuizId);
-            return View(question);
+            questionVm.QuizSelectList = new SelectList(_context.Quizzes, nameof(Quiz.Id), nameof(Quiz.Name), questionVm.Question.QuizId);
+            return View(questionVm);
         }
 
         // GET: Admin/Questions/Edit/5
