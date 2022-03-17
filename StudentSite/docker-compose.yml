@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  studentsite-postgres:
+    container_name: studentsite-postgres
+    image: postgres:latest
+    restart: on-failure
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
+    ports:
+      - "5432:5432"
+    volumes:
+      - studentsite-postgres-volume:/var/lib/postgresql/data
+volumes:
+  studentsite-postgres-volume:
