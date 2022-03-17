@@ -1,4 +1,5 @@
 ﻿using System;
+using Base.Domain;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -56,8 +57,8 @@ namespace App.DAL.EF.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Name = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    Description = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false)
+                    Name = table.Column<LangStr>(type: "jsonb", nullable: false),
+                    Description = table.Column<LangStr>(type: "jsonb", nullable: false)
                 },
                 constraints: table =>
                 {

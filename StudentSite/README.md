@@ -15,6 +15,13 @@ dotnet aspnet-codegenerator controller -name UserCommentsController        -acti
 
 dotnet aspnet-codegenerator controller -name TodosController        -actions -m  Todo        -dc AppDbContext -outDir Controllers --useDefaultLayout --useAsyncActions --referenceScriptLibraries -f
 
+Api Controllers
+
+~~~
+dotnet aspnet-codegenerator controller -name SubjectsController     -m App.Domain.Subject     -actions -dc AppDbContext -outDir ApiControllers -api --useAsyncActions  -f
+~~~
+
+
 // ADMIN AREA
 
 dotnet aspnet-codegenerator controller -name SubjectsController        -actions -m  Subject        -dc AppDbContext -outDir Areas\Admin\Controllers --useDefaultLayout --useAsyncActions --referenceScriptLibraries -f

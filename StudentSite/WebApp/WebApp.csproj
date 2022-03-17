@@ -25,6 +25,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="ApiControllers" />
       <Folder Include="Areas\Admin" />
     </ItemGroup>
 

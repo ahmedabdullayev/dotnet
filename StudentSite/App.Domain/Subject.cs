@@ -1,14 +1,16 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Base.Domain;
 
 namespace App.Domain;
 
 public class Subject : DomainEntityId
 {
-    [MaxLength(50)]
-    public string Name { get; set; } = default!;
-    [MaxLength(255)]
-    public string Description { get; set; } = default!;
+    [Column(TypeName = "jsonb")] // convert to json and save as string, and when we get it deserialize it and return object
+    public LangStr Name { get; set; } = new();
+    
+    [Column(TypeName = "jsonb")] // convert to json and save as string, and when we get it deserialize it and return object
+    public LangStr Description { get; set; } = new();
 
     public ICollection<Quiz>? Quizzes { get; set; }
 }
