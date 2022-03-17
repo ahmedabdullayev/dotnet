@@ -50,7 +50,7 @@ namespace WebApp.Controllers
         // GET: UserQuizzes/Create
         public IActionResult Create()
         {
-            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Firstname");
+            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id");
             ViewData["QuizId"] = new SelectList(_context.Quizzes, "Id", "Description");
             return View();
         }

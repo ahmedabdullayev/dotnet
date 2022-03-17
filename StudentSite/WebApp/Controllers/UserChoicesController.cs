@@ -54,7 +54,7 @@ namespace WebApp.Controllers
         public IActionResult Create()
         {
             ViewData["AnswerId"] = new SelectList(_context.Answers, "Id", "AnswerText");
-            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Firstname");
+            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id");
             ViewData["QuestionId"] = new SelectList(_context.Questions, "Id", "QuestionText");
             ViewData["QuizId"] = new SelectList(_context.Quizzes, "Id", "Description");
             ViewData["UserQuizId"] = new SelectList(_context.UserQuizzes, "Id", "Id");

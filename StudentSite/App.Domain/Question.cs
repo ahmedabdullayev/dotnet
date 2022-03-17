@@ -3,7 +3,7 @@ using Base.Domain;
 
 namespace App.Domain;
 
-public class Question : DomainEntityId
+public class Question : DomainEntityMetaId // TODO UPDATE DB!
 {
     [MaxLength(200)]
     public string QuestionText { get; set; } = default!;
