@@ -1,4 +1,5 @@
 using System.Globalization;
+using App.Contracts.DAL;
 using App.DAL.EF;
 using App.Domain.Identity;
 using Microsoft.AspNetCore.Identity;
@@ -13,6 +14,9 @@ var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("NpgsqlConnection");
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString));
+
+builder.Services.AddScoped<IAppUnitOfWork, AppUOW>();
+
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 

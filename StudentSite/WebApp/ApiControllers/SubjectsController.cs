@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using App.Contracts.DAL;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -16,18 +17,18 @@ namespace WebApp.ApiControllers
     [ApiController]
     public class SubjectsController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        private readonly IAppUnitOfWork _uow;
 
-        public SubjectsController(AppDbContext context)
+        public SubjectsController(IAppUnitOfWork uow)
         {
-            _context = context;
+            _uow = uow;
         }
 
         // GET: api/Subjects
         [HttpGet]
         public async Task<ActionResult<IEnumerable<SubjectsDTO>>> GetSubjects()
         {
-            var res = (await _context.Subjects.ToListAsync())
+            var res = (await _uow.Subjects.GetAllAsync())
                 .Select(x => new SubjectsDTO()
                 {
                     Id = x.Id,
@@ -41,7 +42,7 @@ namespace WebApp.ApiControllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Subject>> GetSubject(Guid id)
         {
-            var subject = await _context.Subjects.FindAsync(id);
+            var subject = await _uow.Subjects.FirstOrDefaultAsync(id);
 
             if (subject == null)
             {
@@ -61,7 +62,7 @@ namespace WebApp.ApiControllers
                 return BadRequest();
             }
 
-            var subjectFromDb = await _context.Subjects.FindAsync(id);
+            var subjectFromDb = await _uow.Subjects.FirstOrDefaultAsync(id);
             if (subjectFromDb == null)
             {
                 return NotFound();
@@ -69,15 +70,15 @@ namespace WebApp.ApiControllers
             
             subjectFromDb.Name.SetTranslation(subject.Name);
             subjectFromDb.Description.SetTranslation(subject.Description);
-            _context.Entry(subjectFromDb).State = EntityState.Modified;
+            _uow.Subjects.Entry(subjectFromDb).State = EntityState.Modified;
 
             try
             {
-                await _context.SaveChangesAsync();
+                await _uow.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!SubjectExists(id))
+                if (!await SubjectExists(subject.Id))
                 {
                     return NotFound();
                 }
@@ -98,8 +99,8 @@ namespace WebApp.ApiControllers
             var subj = new Subject();
             subj.Name.SetTranslation(subject.Name);
             subj.Description.SetTranslation(subject.Description);
-            _context.Subjects.Add(subj);
-            await _context.SaveChangesAsync();
+            _uow.Subjects.Add(subj);
+            await _uow.SaveChangesAsync();
 
             return CreatedAtAction("GetSubject", new { id = subj.Id }, subj);
         }
@@ -108,21 +109,21 @@ namespace WebApp.ApiControllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteSubject(Guid id)
         {
-            var subject = await _context.Subjects.FindAsync(id);
+            var subject = await _uow.Subjects.FirstOrDefaultAsync(id);
             if (subject == null)
             {
                 return NotFound();
             }
 
-            _context.Subjects.Remove(subject);
-            await _context.SaveChangesAsync();
+            _uow.Subjects.Remove(subject);
+            await _uow.SaveChangesAsync();
 
             return NoContent();
         }
 
-        private bool SubjectExists(Guid id)
+        private async Task<bool> SubjectExists(Guid id)
         {
-            return _context.Subjects.Any(e => e.Id == id);
+            return await _uow.Subjects.ExistsAsync(id);
         }
     }
 }
