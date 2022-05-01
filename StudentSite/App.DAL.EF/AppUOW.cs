@@ -21,7 +21,10 @@ public class AppUOW : IAppUnitOfWork
     }
 
     private ISubjectRepository? _subjects;
-
     public virtual ISubjectRepository Subjects =>
         _subjects ??= new SubjectRepository(UOWDbContext);
+
+    private IQuizRepository? _quizRepository;
+    public virtual IQuizRepository Quizzes => 
+        _quizRepository ??= new QuizRepository(UOWDbContext);
 }
