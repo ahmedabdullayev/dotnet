@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using App.DAL.EF;
 using App.Domain.Identity;
 using Microsoft.AspNetCore.Identity;
@@ -69,12 +70,13 @@ public class AppDataHelper
                 }
             }
 
-            var users = new (string username, string password, string roles)[]
+            var users = new (string username,string firstName,string lastName, string password, string roles)[]
             {
-                ("admin@itcollege.ee", "123456", "user, admin"),
-                ("user@itcollege.ee", "123456", "user"),
-                ("newuser@itcollege.ee", "123456", "")
+                ("admin@itcollege.ee","Admin", "College", "123456", "user, admin"),
+                ("user@itcollege.ee","Ahmed", "Abdullajev", "123456", "user"),
+                ("newuser@itcollege.ee", "User", "College", "123456", "")
             };
+
 
             foreach (var userInfo in users)
             {
@@ -85,9 +87,13 @@ public class AppDataHelper
                     {
                         Email = userInfo.username,
                         UserName = userInfo.username,
+                        Firstname = userInfo.firstName,
+                        Lastname = userInfo.lastName,
                         EmailConfirmed = true,
                     };
                     var identityResult = userManager.CreateAsync(user, userInfo.password).Result;
+                    identityResult = userManager.AddClaimAsync(user, new Claim("aspnet.firstname", user.Firstname)).Result;
+                    identityResult = userManager.AddClaimAsync(user, new Claim("aspnet.lastname", user.Lastname)).Result;
                     if (!identityResult.Succeeded)
                     {
                         throw new ApplicationException("Cannot create user!");

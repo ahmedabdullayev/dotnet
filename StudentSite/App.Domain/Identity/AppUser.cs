@@ -6,9 +6,11 @@ namespace App.Domain.Identity;
 public class AppUser : BaseUser
 {
     [StringLength(128)]
-    public string? Firstname { get; set; } = default!;
-    [StringLength(128)]
-    public string? Lastname { get; set; }
+    public string Firstname { get; set; } = default!;
+
+    [StringLength(128)] public string Lastname { get; set; } = default!;
+
+    public ICollection<RefreshToken>? RefreshTokens { get; set; }
 
     public ICollection<Quiz>? Quizzes { get; set; }
     public ICollection<UserChoice>? UserChoices { get; set; }

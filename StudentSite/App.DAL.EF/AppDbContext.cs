@@ -8,6 +8,8 @@ namespace App.DAL.EF;
 
 public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid>
 {
+    public DbSet<RefreshToken> RefreshTokens { get; set; } = default!;
+
     //For quiz feature
     public DbSet<Subject> Subjects { get; set; } = default!;
 

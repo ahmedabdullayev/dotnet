@@ -30,8 +30,8 @@ namespace App.DAL.EF.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Firstname = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: true),
-                    Lastname = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: true),
+                    Firstname = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
+                    Lastname = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
                     UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
@@ -180,6 +180,28 @@ namespace App.DAL.EF.Migrations
                     table.ForeignKey(
                         name: "FK_AspNetUserTokens_AspNetUsers_UserId",
                         column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "RefreshTokens",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Token = table.Column<string>(type: "character varying(36)", maxLength: 36, nullable: false),
+                    TokenExpirationDateTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    PreviousToken = table.Column<string>(type: "character varying(36)", maxLength: 36, nullable: true),
+                    PreviousTokenExpirationDateTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    AppUserId = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RefreshTokens", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_RefreshTokens_AspNetUsers_AppUserId",
+                        column: x => x.AppUserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -461,6 +483,11 @@ namespace App.DAL.EF.Migrations
                 column: "SubjectId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_RefreshTokens_AppUserId",
+                table: "RefreshTokens",
+                column: "AppUserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Todos_AppUserId",
                 table: "Todos",
                 column: "AppUserId");
@@ -537,6 +564,9 @@ namespace App.DAL.EF.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens");
+
+            migrationBuilder.DropTable(
+                name: "RefreshTokens");
 
             migrationBuilder.DropTable(
                 name: "Todos");

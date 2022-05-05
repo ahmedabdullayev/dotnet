@@ -95,10 +95,12 @@ namespace App.DAL.EF.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<string>("Firstname")
+                        .IsRequired()
                         .HasMaxLength(128)
                         .HasColumnType("character varying(128)");
 
                     b.Property<string>("Lastname")
+                        .IsRequired()
                         .HasMaxLength(128)
                         .HasColumnType("character varying(128)");
 
@@ -145,6 +147,37 @@ namespace App.DAL.EF.Migrations
                         .HasDatabaseName("UserNameIndex");
 
                     b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("App.Domain.Identity.RefreshToken", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("AppUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("PreviousToken")
+                        .HasMaxLength(36)
+                        .HasColumnType("character varying(36)");
+
+                    b.Property<DateTime?>("PreviousTokenExpirationDateTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasMaxLength(36)
+                        .HasColumnType("character varying(36)");
+
+                    b.Property<DateTime>("TokenExpirationDateTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AppUserId");
+
+                    b.ToTable("RefreshTokens");
                 });
 
             modelBuilder.Entity("App.Domain.Posts.Topic", b =>
@@ -512,6 +545,17 @@ namespace App.DAL.EF.Migrations
                     b.Navigation("Question");
                 });
 
+            modelBuilder.Entity("App.Domain.Identity.RefreshToken", b =>
+                {
+                    b.HasOne("App.Domain.Identity.AppUser", "AppUser")
+                        .WithMany("RefreshTokens")
+                        .HasForeignKey("AppUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AppUser");
+                });
+
             modelBuilder.Entity("App.Domain.Posts.UserComment", b =>
                 {
                     b.HasOne("App.Domain.Identity.AppUser", "AppUser")
@@ -712,6 +756,8 @@ namespace App.DAL.EF.Migrations
             modelBuilder.Entity("App.Domain.Identity.AppUser", b =>
                 {
                     b.Navigation("Quizzes");
+
+                    b.Navigation("RefreshTokens");
 
                     b.Navigation("Todos");
 
