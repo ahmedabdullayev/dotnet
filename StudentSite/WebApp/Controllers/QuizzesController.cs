@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using App.Contracts.BLL;
 using App.Contracts.DAL;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -16,17 +17,16 @@ namespace WebApp.Controllers
 {
     public class QuizzesController : Controller
     {
-        private readonly IAppUnitOfWork _uow;
-
-        public QuizzesController(IAppUnitOfWork uow)
+        private readonly IAppBLL _bll;
+        public QuizzesController(IAppBLL bll)
         {
-            _uow = uow;
+            _bll = bll;
         }
 
         // GET: Quizzes
         public async Task<IActionResult> Index()
         {
-            var res = await _uow.Quizzes.GetAllAsync(User.GetUserId());
+            var res = await _bll.Quizzes.GetAllAsync(User.GetUserId());
             return View(res);
         }
 
@@ -38,7 +38,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var quiz = await _uow.Quizzes.FirstOrDefaultAsync(id.Value);
+            var quiz = await _bll.Quizzes.FirstOrDefaultAsync(id.Value);
             if (quiz == null)
             {
                 return NotFound();
@@ -52,7 +52,7 @@ namespace WebApp.Controllers
         {
             // ViewData["SubjectId"] = new SelectList(_context.Subjects, "Id", "Description");
             var quizVm = new QuizzesCreateEditVM();
-            quizVm.SubjectSelectList = new SelectList(await _uow.Subjects.GetAllAsync(), nameof(Subject.Id), nameof(Subject.Name));
+            quizVm.SubjectSelectList = new SelectList(await _bll.Subjects.GetAllAsync(), nameof(Subject.Id), nameof(Subject.Name));
             return View(quizVm);
         }
 
@@ -67,12 +67,12 @@ namespace WebApp.Controllers
             {
                 quizVm.Quiz.AppUserId = User.GetUserId();
                 quizVm.Quiz.Id = Guid.NewGuid();
-                _uow.Quizzes.Add(quizVm.Quiz);
-                await _uow.SaveChangesAsync();
+                _bll.Quizzes.Add(quizVm.Quiz);
+                await _bll.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
             // ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Firstname", quizVm.Quiz.AppUserId);
-            quizVm.SubjectSelectList = new SelectList(await _uow.Subjects.GetAllAsync(), nameof(Subject.Id), nameof(Subject.Name), quizVm.Quiz.SubjectId);
+            quizVm.SubjectSelectList = new SelectList(await _bll.Subjects.GetAllAsync(), nameof(Subject.Id), nameof(Subject.Name), quizVm.Quiz.SubjectId);
             return View(quizVm);
         }
 
@@ -84,7 +84,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var quiz = await _uow.Quizzes.FirstOrDefaultAsync(id.Value);
+            var quiz = await _bll.Quizzes.FirstOrDefaultAsync(id.Value);
             
             if (quiz == null)
             {
@@ -93,7 +93,7 @@ namespace WebApp.Controllers
             var quizVm = new QuizzesCreateEditVM();
             quizVm.Quiz = quiz;
             
-            quizVm.SubjectSelectList = new SelectList(await _uow.Subjects.GetAllAsync(), nameof(Subject.Id), nameof(Subject.Name), quizVm.Quiz.SubjectId);
+            quizVm.SubjectSelectList = new SelectList(await _bll.Subjects.GetAllAsync(), nameof(Subject.Id), nameof(Subject.Name), quizVm.Quiz.SubjectId);
             return View(quizVm);
         }
 
@@ -114,8 +114,8 @@ namespace WebApp.Controllers
                 try
                 {
                     quizVm.Quiz.AppUserId = User.GetUserId();
-                    _uow.Quizzes.Update(quizVm.Quiz);
-                    await _uow.SaveChangesAsync();
+                    _bll.Quizzes.Update(quizVm.Quiz);
+                    await _bll.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -130,7 +130,7 @@ namespace WebApp.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            quizVm.SubjectSelectList = new SelectList(await _uow.Subjects.GetAllAsync(), nameof(Subject.Id), nameof(Subject.Name), quizVm.Quiz.SubjectId);
+            quizVm.SubjectSelectList = new SelectList(await _bll.Subjects.GetAllAsync(), nameof(Subject.Id), nameof(Subject.Name), quizVm.Quiz.SubjectId);
             return View(quizVm);
         }
 
@@ -142,7 +142,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var quiz = await _uow.Quizzes.FirstOrDefaultAsync(id.Value);
+            var quiz = await _bll.Quizzes.FirstOrDefaultAsync(id.Value);
             if (quiz == null)
             {
                 return NotFound();
@@ -156,14 +156,14 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            await _uow.Quizzes.RemoveAsync(id);
-            await _uow.SaveChangesAsync();
+            await _bll.Quizzes.RemoveAsync(id);
+            await _bll.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private async Task<bool> QuizExists(Guid id)
         {
-            return await _uow.Quizzes.ExistsAsync(id);
+            return await _bll.Quizzes.ExistsAsync(id);
         }
     }
 }

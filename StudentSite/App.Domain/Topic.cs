@@ -1,6 +1,6 @@
 using Base.Domain;
 
-namespace App.Domain.Posts;
+namespace App.Domain;
 
 public class Topic : DomainEntityMetaId
 {

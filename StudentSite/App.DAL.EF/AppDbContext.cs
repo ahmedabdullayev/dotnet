@@ -1,6 +1,5 @@
 using App.Domain;
 using App.Domain.Identity;
-using App.Domain.Posts;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 

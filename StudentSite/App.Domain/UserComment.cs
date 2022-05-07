@@ -1,7 +1,7 @@
 using App.Domain.Identity;
 using Base.Domain;
 
-namespace App.Domain.Posts;
+namespace App.Domain;
 
 public class UserComment : DomainEntityMetaId
 {

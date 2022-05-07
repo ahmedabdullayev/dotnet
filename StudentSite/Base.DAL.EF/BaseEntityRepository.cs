@@ -1,34 +1,44 @@
-﻿using Base.Contracts.DAL;
+﻿using Base.Contracts.Base;
+using Base.Contracts.DAL;
 using Base.Contracts.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace Base.DAL.EF;
 
-public class BaseEntityRepository<TEntity, TDbContext> : BaseEntityRepository<TEntity, Guid, TDbContext> 
-    where TEntity : class, IDomainEntityId<Guid>
+public class BaseEntityRepository<TDalEntity, TDomainEntity, TDbContext> : BaseEntityRepository<TDalEntity, TDomainEntity, Guid, TDbContext> 
+    where TDalEntity : class, IDomainEntityId<Guid>
+    where TDomainEntity : class, IDomainEntityId<Guid>
     where TDbContext : DbContext
 {
-    public BaseEntityRepository(TDbContext dbContext) : base(dbContext)
+    public BaseEntityRepository(
+        TDbContext dbContext, 
+        IMapper<TDalEntity,
+            TDomainEntity> mapper) : base(dbContext, mapper)
     {
     }
 }
 
-public class BaseEntityRepository<TEntity, TKey, TDbContext> : IEntityRepository<TEntity, TKey> 
-    where TEntity : class, IDomainEntityId<TKey> 
+public class BaseEntityRepository<TDalEntity, TDomainEntity, TKey, TDbContext> : IEntityRepository<TDalEntity, TKey> 
+    where TDalEntity : class, IDomainEntityId<TKey> 
+    where TDomainEntity : class, IDomainEntityId<TKey> 
     where TKey : IEquatable<TKey>
     where TDbContext : DbContext
 {
     protected readonly TDbContext RepoDbContext;
-    protected readonly DbSet<TEntity> RepoDbSet;
-    
-    public BaseEntityRepository(TDbContext dbContext)
+    protected readonly DbSet<TDomainEntity> RepoDbSet;
+    protected readonly IMapper<TDalEntity, TDomainEntity> Mapper;
+    public BaseEntityRepository(
+        TDbContext dbContext,
+        IMapper<TDalEntity,TDomainEntity> mapper
+    )
     {
         RepoDbContext = dbContext;
-        RepoDbSet = dbContext.Set<TEntity>();
+        RepoDbSet = dbContext.Set<TDomainEntity>();
+        Mapper = mapper;
     }
 
-    protected virtual IQueryable<TEntity> CreateQuery(bool noTracking = true)
+    protected virtual IQueryable<TDomainEntity> CreateQuery(bool noTracking = true)
     {
         // TODO: entity ownership control
         
@@ -41,40 +51,48 @@ public class BaseEntityRepository<TEntity, TKey, TDbContext> : IEntityRepository
         return query;
     }
 
-    public virtual TEntity Add(TEntity entity)
+    public virtual TDalEntity Add(TDalEntity entity)
     {
-        return RepoDbSet.Add(entity).Entity;
+        return Mapper.Map(RepoDbSet.Add(Mapper.Map(entity)!).Entity)!;
     }
 
-    public virtual TEntity Update(TEntity entity)
+    public virtual TDalEntity Update(TDalEntity entity)
     {
-        return RepoDbSet.Update(entity).Entity;
+        return Mapper.Map(
+            RepoDbSet.Update(
+                Mapper.Map(entity)!)
+                .Entity)!;
     }
 
-    public virtual TEntity Remove(TEntity entity)
+    public virtual TDalEntity Remove(TDalEntity entity)
     {
-        return RepoDbSet.Remove(entity).Entity;
+        return Mapper.Map(RepoDbSet.Remove(Mapper.Map(entity)!).Entity)!;
     }
 
-    public virtual TEntity Remove(TKey id)
+    public virtual TDalEntity Remove(TKey id)
     {
         var entity = FirstOrDefault(id);
         if (entity == null)
         {
             //TODO: implement custom exception for entity not found
-            throw new NullReferenceException($"Entity {typeof(TEntity).Name} with id {id} was not found");
+            throw new NullReferenceException($"Entity {typeof(TDalEntity).Name} with id {id} was not found");
         }
         return Remove(entity);
     }
 
-    public virtual TEntity? FirstOrDefault(TKey id, bool noTracking = true)
+    public virtual TDalEntity? FirstOrDefault(TKey id, bool noTracking = true)
     {
-        return CreateQuery(noTracking).FirstOrDefault(a => a.Id.Equals(id));
+        return Mapper.Map(
+            CreateQuery(noTracking)
+                .FirstOrDefault(a => a.Id.Equals(id))
+            );
     }
 
-    public virtual IEnumerable<TEntity> GetAll(bool noTracking = true)
+    public virtual IEnumerable<TDalEntity> GetAll(bool noTracking = true)
     {
-        return CreateQuery(noTracking).ToList();
+        return CreateQuery(noTracking).ToList()
+            .ToList()
+            .Select(x => Mapper.Map(x)!);
     }
 
     public virtual bool Exists(TKey id)
@@ -82,18 +100,26 @@ public class BaseEntityRepository<TEntity, TKey, TDbContext> : IEntityRepository
         return RepoDbSet.Any(a => a.Id.Equals(id));
     }
 
-    public virtual async Task<TEntity?> FirstOrDefaultAsync(TKey id, bool noTracking = true)
+    // TODO PLEASE CHECK IT
+    public virtual EntityEntry<TDalEntity> Entry(TDalEntity entity)
     {
-        return await CreateQuery(noTracking).FirstOrDefaultAsync(a => a.Id.Equals(id));
+       return RepoDbContext.Entry(entity);
     }
 
-    public virtual EntityEntry<TEntity> Entry(TEntity entity)
+    public virtual async Task<TDalEntity?> FirstOrDefaultAsync(TKey id, bool noTracking = true)
     {
-        return RepoDbContext.Entry(entity);
+        return Mapper.Map(
+            await CreateQuery(noTracking)
+                .FirstOrDefaultAsync(a => a.Id.Equals(id))
+            );
     }
-    public virtual async Task<IEnumerable<TEntity>> GetAllAsync(bool noTracking = true)
+
+    public virtual async Task<IEnumerable<TDalEntity>> GetAllAsync(bool noTracking = true)
     {
-        return await CreateQuery(noTracking).ToListAsync();
+        return (
+            await CreateQuery(noTracking)
+                .ToListAsync())
+            .Select(x => Mapper.Map(x)!);
     }
 
     public virtual async Task<bool> ExistsAsync(TKey id)
@@ -101,13 +127,13 @@ public class BaseEntityRepository<TEntity, TKey, TDbContext> : IEntityRepository
         return await RepoDbSet.AnyAsync(a => a.Id.Equals(id));
     }
 
-    public virtual async Task<TEntity> RemoveAsync(TKey id)
+    public virtual async Task<TDalEntity> RemoveAsync(TKey id)
     {
         var entity = await FirstOrDefaultAsync(id);
         if (entity == null)
         {
             //TODO: implement custom exception for entity not found
-            throw new NullReferenceException($"Entity {typeof(TEntity).Name} with id {id} was not found");
+            throw new NullReferenceException($"Entity {typeof(TDalEntity).Name} with id {id} was not found");
         }
         return Remove(entity);
     }

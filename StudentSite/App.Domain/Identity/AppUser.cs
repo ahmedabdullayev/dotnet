@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using App.Domain.Posts;
 using Base.Domain.Identity;
 namespace App.Domain.Identity;
 

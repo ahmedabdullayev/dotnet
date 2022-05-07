@@ -1,13 +1,15 @@
 using App.Contracts.DAL;
-using App.Domain;
+using App.DAL.DTO;
+using Base.Contracts.Base;
 using Base.DAL.EF;
 using Microsoft.EntityFrameworkCore;
 
 namespace App.DAL.EF.Repositories;
 
-public class QuizRepository: BaseEntityRepository<Quiz, AppDbContext>, IQuizRepository
+public class QuizRepository: BaseEntityRepository<Quiz, App.Domain.Quiz, AppDbContext>, IQuizRepository
 {
-    public QuizRepository(AppDbContext dbContext) : base(dbContext)
+    public QuizRepository(AppDbContext dbContext, IMapper<App.DAL.DTO.Quiz,App.Domain.Quiz> mapper) 
+        : base(dbContext, mapper)
     {
     }
     
@@ -16,13 +18,13 @@ public class QuizRepository: BaseEntityRepository<Quiz, AppDbContext>, IQuizRepo
         var query = CreateQuery(noTracking);
         query = query.Include(u => u.AppUser);
 
-        return await query.ToListAsync();
+        return (await query.ToListAsync()).Select(x => Mapper.Map(x)!);
     }
     // with ownership
     public async Task<IEnumerable<Quiz>> GetAllAsync(Guid userId,bool noTracking = true)
     {
         var query = CreateQuery(noTracking);
         query = query.Include(u => u.AppUser).Where(m => m.AppUserId == userId);
-        return await query.ToListAsync();
+        return (await query.ToListAsync()).Select(x => Mapper.Map(x)!);
     }
 }

@@ -17,7 +17,8 @@ namespace WebApp.ApiControllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    // TODO USE BLL AND DTO FRO REST
     public class SubjectsController : ControllerBase
     {
         private readonly IAppUnitOfWork _uow;
@@ -52,7 +53,7 @@ namespace WebApp.ApiControllers
                 return NotFound();
             }
 
-            return subject;
+            return null;
         }
 
         // PUT: api/Subjects/5
@@ -73,7 +74,7 @@ namespace WebApp.ApiControllers
             
             subjectFromDb.Name.SetTranslation(subject.Name);
             subjectFromDb.Description.SetTranslation(subject.Description);
-            _uow.Subjects.Entry(subjectFromDb).State = EntityState.Modified;
+            // _uow.Subjects.Entry(subjectFromDb).State = EntityState.Modified;
 
             try
             {
@@ -102,7 +103,7 @@ namespace WebApp.ApiControllers
             var subj = new Subject();
             subj.Name.SetTranslation(subject.Name);
             subj.Description.SetTranslation(subject.Description);
-            _uow.Subjects.Add(subj);
+            // _uow.Subjects.Add(subj);
             await _uow.SaveChangesAsync();
 
             return CreatedAtAction("GetSubject", new { id = subj.Id }, subj);

@@ -1,4 +1,4 @@
-@model IEnumerable<App.Domain.Quiz>
+@model IEnumerable<App.BLL.DTO.Quiz>
 
 @{
     ViewData["Title"] = "Index";
@@ -27,9 +27,7 @@
             <th>
                 @Html.DisplayNameFor(model => model.AppUser)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CreatedAt)
-            </th>
+
             <th></th>
         </tr>
     </thead>
@@ -51,9 +49,7 @@
             <td>
                 @Html.DisplayFor(modelItem => item.AppUser!.Id)
             </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CreatedAt)
-            </td>
+
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
