@@ -13,7 +13,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace App.DAL.EF.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20220504182107_Initial")]
+    [Migration("20220511010436_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -31,10 +31,9 @@ namespace App.DAL.EF.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<string>("AnswerText")
+                    b.Property<LangStr>("AnswerText")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("jsonb");
 
                     b.Property<bool>("IsCorrect")
                         .HasColumnType("boolean");
@@ -182,88 +181,6 @@ namespace App.DAL.EF.Migrations
                     b.ToTable("RefreshTokens");
                 });
 
-            modelBuilder.Entity("App.Domain.Posts.Topic", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Topics");
-                });
-
-            modelBuilder.Entity("App.Domain.Posts.UserComment", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("AppUserId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("CommentText")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("UserPostId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AppUserId");
-
-                    b.HasIndex("UserPostId");
-
-                    b.ToTable("UserComments");
-                });
-
-            modelBuilder.Entity("App.Domain.Posts.UserPost", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("AppUserId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Text")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<Guid>("TopicId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AppUserId");
-
-                    b.HasIndex("TopicId");
-
-                    b.ToTable("UserPosts");
-                });
-
             modelBuilder.Entity("App.Domain.Question", b =>
                 {
                     b.Property<Guid>("Id")
@@ -273,10 +190,9 @@ namespace App.DAL.EF.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("QuestionText")
+                    b.Property<LangStr>("QuestionText")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
+                        .HasColumnType("jsonb");
 
                     b.Property<Guid>("QuizId")
                         .HasColumnType("uuid");
@@ -294,31 +210,24 @@ namespace App.DAL.EF.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("AppUserId")
-                        .HasColumnType("uuid");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("Description")
+                    b.Property<LangStr>("Description")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("jsonb");
 
                     b.Property<bool>("IsReady")
                         .HasColumnType("boolean");
 
-                    b.Property<string>("Name")
+                    b.Property<LangStr>("Name")
                         .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("character varying(30)");
+                        .HasColumnType("jsonb");
 
                     b.Property<Guid>("SubjectId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AppUserId");
 
                     b.HasIndex("SubjectId");
 
@@ -370,6 +279,28 @@ namespace App.DAL.EF.Migrations
                     b.ToTable("Todos");
                 });
 
+            modelBuilder.Entity("App.Domain.Topic", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<LangStr>("Description")
+                        .IsRequired()
+                        .HasColumnType("jsonb");
+
+                    b.Property<LangStr>("Name")
+                        .IsRequired()
+                        .HasColumnType("jsonb");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Topics");
+                });
+
             modelBuilder.Entity("App.Domain.UserChoice", b =>
                 {
                     b.Property<Guid>("Id")
@@ -407,6 +338,66 @@ namespace App.DAL.EF.Migrations
                     b.HasIndex("UserQuizId");
 
                     b.ToTable("UserChoices");
+                });
+
+            modelBuilder.Entity("App.Domain.UserComment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("AppUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("CommentText")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("UserPostId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AppUserId");
+
+                    b.HasIndex("UserPostId");
+
+                    b.ToTable("UserComments");
+                });
+
+            modelBuilder.Entity("App.Domain.UserPost", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("AppUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("TopicId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AppUserId");
+
+                    b.HasIndex("TopicId");
+
+                    b.ToTable("UserPosts");
                 });
 
             modelBuilder.Entity("App.Domain.UserQuiz", b =>
@@ -558,44 +549,6 @@ namespace App.DAL.EF.Migrations
                     b.Navigation("AppUser");
                 });
 
-            modelBuilder.Entity("App.Domain.Posts.UserComment", b =>
-                {
-                    b.HasOne("App.Domain.Identity.AppUser", "AppUser")
-                        .WithMany("UserComments")
-                        .HasForeignKey("AppUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("App.Domain.Posts.UserPost", "UserPost")
-                        .WithMany()
-                        .HasForeignKey("UserPostId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("AppUser");
-
-                    b.Navigation("UserPost");
-                });
-
-            modelBuilder.Entity("App.Domain.Posts.UserPost", b =>
-                {
-                    b.HasOne("App.Domain.Identity.AppUser", "AppUser")
-                        .WithMany("UserPosts")
-                        .HasForeignKey("AppUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("App.Domain.Posts.Topic", "Topic")
-                        .WithMany("UserPosts")
-                        .HasForeignKey("TopicId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("AppUser");
-
-                    b.Navigation("Topic");
-                });
-
             modelBuilder.Entity("App.Domain.Question", b =>
                 {
                     b.HasOne("App.Domain.Quiz", "Quiz")
@@ -609,19 +562,11 @@ namespace App.DAL.EF.Migrations
 
             modelBuilder.Entity("App.Domain.Quiz", b =>
                 {
-                    b.HasOne("App.Domain.Identity.AppUser", "AppUser")
-                        .WithMany("Quizzes")
-                        .HasForeignKey("AppUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("App.Domain.Subject", "Subject")
                         .WithMany("Quizzes")
                         .HasForeignKey("SubjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("AppUser");
 
                     b.Navigation("Subject");
                 });
@@ -678,6 +623,44 @@ namespace App.DAL.EF.Migrations
                     b.Navigation("Quiz");
 
                     b.Navigation("UserQuiz");
+                });
+
+            modelBuilder.Entity("App.Domain.UserComment", b =>
+                {
+                    b.HasOne("App.Domain.Identity.AppUser", "AppUser")
+                        .WithMany("UserComments")
+                        .HasForeignKey("AppUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("App.Domain.UserPost", "UserPost")
+                        .WithMany("UserComments")
+                        .HasForeignKey("UserPostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AppUser");
+
+                    b.Navigation("UserPost");
+                });
+
+            modelBuilder.Entity("App.Domain.UserPost", b =>
+                {
+                    b.HasOne("App.Domain.Identity.AppUser", "AppUser")
+                        .WithMany("UserPosts")
+                        .HasForeignKey("AppUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("App.Domain.Topic", "Topic")
+                        .WithMany("UserPosts")
+                        .HasForeignKey("TopicId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AppUser");
+
+                    b.Navigation("Topic");
                 });
 
             modelBuilder.Entity("App.Domain.UserQuiz", b =>
@@ -757,8 +740,6 @@ namespace App.DAL.EF.Migrations
 
             modelBuilder.Entity("App.Domain.Identity.AppUser", b =>
                 {
-                    b.Navigation("Quizzes");
-
                     b.Navigation("RefreshTokens");
 
                     b.Navigation("Todos");
@@ -770,11 +751,6 @@ namespace App.DAL.EF.Migrations
                     b.Navigation("UserPosts");
 
                     b.Navigation("UserQuizzes");
-                });
-
-            modelBuilder.Entity("App.Domain.Posts.Topic", b =>
-                {
-                    b.Navigation("UserPosts");
                 });
 
             modelBuilder.Entity("App.Domain.Question", b =>
@@ -794,6 +770,16 @@ namespace App.DAL.EF.Migrations
             modelBuilder.Entity("App.Domain.Subject", b =>
                 {
                     b.Navigation("Quizzes");
+                });
+
+            modelBuilder.Entity("App.Domain.Topic", b =>
+                {
+                    b.Navigation("UserPosts");
+                });
+
+            modelBuilder.Entity("App.Domain.UserPost", b =>
+                {
+                    b.Navigation("UserComments");
                 });
 
             modelBuilder.Entity("App.Domain.UserQuiz", b =>

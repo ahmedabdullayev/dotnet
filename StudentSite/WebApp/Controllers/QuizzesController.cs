@@ -65,9 +65,11 @@ namespace WebApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                quizVm.Quiz.AppUserId = User.GetUserId();
+                // quizVm.Quiz.AppUserId = User.GetUserId();
                 quizVm.Quiz.Id = Guid.NewGuid();
                 _bll.Quizzes.Add(quizVm.Quiz);
+                // Console.WriteLine("USER id: " + quizVm.Quiz.AppUserId);
+                Console.WriteLine("USER id: " + quizVm.Quiz.Id);
                 await _bll.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
@@ -113,7 +115,7 @@ namespace WebApp.Controllers
             {
                 try
                 {
-                    quizVm.Quiz.AppUserId = User.GetUserId();
+                    // quizVm.Quiz.AppUserId = User.GetUserId();
                     _bll.Quizzes.Update(quizVm.Quiz);
                     await _bll.SaveChangesAsync();
                 }

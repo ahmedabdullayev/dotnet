@@ -4,16 +4,17 @@ using System.Net;
 using System.Security.Claims;
 using App.DAL.EF;
 using App.Domain.Identity;
+using App.Public.DTO.v1;
+using App.Public.DTO.v1.Identity;
 using Base.Extensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using WebApp.DTO;
-using WebApp.DTO.Identity;
+using AppUser = App.Domain.Identity.AppUser;
 
 namespace WebApp.ApiControllers.Identity;
-
-[Route("api/identity/[controller]/[action]")]
+[ApiVersion("1.0")]
+[Route("api/v{version:apiVersion}/identity/[controller]/[action]")]
 [ApiController]
 public class AccountController : ControllerBase
 {
@@ -45,6 +46,7 @@ public class AccountController : ControllerBase
     {
         // verify username
         var appUser = await _userManager.FindByEmailAsync(loginData.Email);
+        var userRoles = await _userManager.GetRolesAsync(appUser);
         if (appUser == null)
         {
             _logger.LogWarning("WebApi login failed, email {} not found", loginData.Email);
@@ -105,6 +107,8 @@ public class AccountController : ControllerBase
         var res = new JwtResponse()
         {
             Token = jwt,
+            Email = appUser.Email,
+            Roles = userRoles,
             RefreshToken = refreshToken.Token,
             FirstName = appUser.Firstname,
             LastName = appUser.Lastname,
@@ -119,6 +123,7 @@ public class AccountController : ControllerBase
     {
         // verify user
         var appUser = await _userManager.FindByEmailAsync(registrationData.Email);
+
         if (appUser != null)
         {
             _logger.LogWarning("User with email {} is already registered", registrationData.Email);
@@ -193,10 +198,13 @@ public class AccountController : ControllerBase
             _configuration["JWT:Issuer"],
             DateTime.Now.AddMinutes(_configuration.GetValue<int>("JWT:ExpireInMinutes"))
         );
+        var userRoles = await _userManager.GetRolesAsync(appUser);
 
         var res = new JwtResponse()
         {
             Token = jwt,
+            Email = appUser.Email,
+            Roles = userRoles,
             RefreshToken = refreshToken.Token,
             FirstName = appUser.Firstname,
             LastName = appUser.Lastname,
@@ -236,6 +244,7 @@ public class AccountController : ControllerBase
 
         // get user and tokens
         var appUser = await _userManager.FindByEmailAsync(userEmail);
+
         if (appUser == null)
         {
             return NotFound($"User with email {userEmail} not found");
@@ -296,10 +305,13 @@ public class AccountController : ControllerBase
 
             await _context.SaveChangesAsync();
         }
+        // var userRoles = await _userManager.GetRolesAsync(appUser);
 
         var res = new JwtResponse()
         {
             Token = jwt,
+            Email = appUser.Email,
+            // Roles = userRoles,
             RefreshToken = refreshToken.Token,
             FirstName = appUser.Firstname,
             LastName = appUser.Lastname,

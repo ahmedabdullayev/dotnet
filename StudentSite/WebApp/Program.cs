@@ -7,9 +7,12 @@ using App.DAL.EF;
 using App.Domain.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Swashbuckle.AspNetCore.SwaggerGen;
 using WebApp;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,7 +27,8 @@ builder.Services.AddScoped<IAppBLL, AppBLL>();
 
 builder.Services.AddAutoMapper(
     typeof(App.DAL.EF.AutomapperConfig),
-    typeof(App.BLL.AutomapperConfig)
+    typeof(App.BLL.AutomapperConfig),
+    typeof(App.Public.DTO.v1.AutomapperConfig)
 );
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
@@ -47,6 +51,21 @@ builder.Services
     .AddDefaultUI()
     .AddDefaultTokenProviders()
     .AddEntityFrameworkStores<AppDbContext>();
+    
+    
+// API Versioning
+builder.Services.AddApiVersioning(options =>
+    {
+        options.ReportApiVersions = true;
+        // in case of no explicit version
+        options.DefaultApiVersion = new ApiVersion(1, 0);
+    }
+);
+// and swagger
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddVersionedApiExplorer( options => options.GroupNameFormat = "'v'VVV" );
+builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
+builder.Services.AddSwaggerGen();
 
 builder.Services
     .AddAuthentication()
@@ -69,6 +88,17 @@ builder.Services
     });
 
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("CorsAllowAll",
+        policyBuilder =>
+        {
+            policyBuilder.AllowAnyOrigin();
+            policyBuilder.AllowAnyHeader();
+            policyBuilder.AllowAnyMethod();
+        });
+});
 
 
 var supportedCultures = builder.Configuration
@@ -115,6 +145,22 @@ else
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+app.UseSwagger();
+app.UseSwaggerUI(options =>
+{
+    var provider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>(); 
+    foreach ( var description in provider.ApiVersionDescriptions )
+    {
+        options.SwaggerEndpoint(
+            $"/swagger/{description.GroupName}/swagger.json",
+            description.GroupName.ToUpperInvariant() 
+        );
+    }
+    // serve from root
+    // options.RoutePrefix = string.Empty;
+});
+
+app.UseCors("CorsAllowAll");
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();

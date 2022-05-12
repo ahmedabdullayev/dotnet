@@ -13,5 +13,5 @@ public class Answer : DomainEntityId
     public Guid QuestionId { get; set; }
     public Question? Question { get; set; }
     
-    public ICollection<UserChoice>? UserChoices { get; set; }
+    // public ICollection<UserChoice>? UserChoices { get; set; }
 }

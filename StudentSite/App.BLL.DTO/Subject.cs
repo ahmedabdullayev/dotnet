@@ -5,11 +5,9 @@ namespace App.BLL.DTO;
 
 public class Subject : DomainEntityId
 {
-    [Column(TypeName = "jsonb")] // convert to json and save as string, and when we get it deserialize it and return object
-    public LangStr Name { get; set; } = new();
-    
-    [Column(TypeName = "jsonb")] // convert to json and save as string, and when we get it deserialize it and return object
-    public LangStr Description { get; set; } = new();
+    // LangStr
+    public string Name { get; set; } = default!;
+    public string Description { get; set; } = default!;
 
     public ICollection<Quiz>? Quizzes { get; set; }
 }

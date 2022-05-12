@@ -1,133 +1,98 @@
-#nullable disable
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using App.Contracts.DAL;
-using Microsoft.AspNetCore.Http;
+using App.Contracts.BLL;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using App.DAL.EF;
-using App.Domain;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
-using WebApp.DTO;
+using AutoMapper;
 
-namespace WebApp.ApiControllers
+namespace WebApp.ApiControllers;
+
+[ApiController]
+[ApiVersion("1.0")]
+[Route("api/v{version:apiVersion}/[controller]/[action]")]
+// [Authorize(Roles = "Admin", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+// TODO USE BLL AND DTO FRO REST
+public class SubjectsController : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    // TODO USE BLL AND DTO FRO REST
-    public class SubjectsController : ControllerBase
+    private readonly IAppBLL _bll;
+    private readonly IMapper _mapper;
+
+    public SubjectsController(IAppBLL bll, IMapper mapper)
     {
-        private readonly IAppUnitOfWork _uow;
+        _bll = bll;
+        _mapper = mapper;
+    }
 
-        public SubjectsController(IAppUnitOfWork uow)
+    // GET: api/Subjects
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<App.Public.DTO.v1.Subject>>> GetSubjects()
+    {
+        return Ok((await _bll.Subjects.GetAllAsync())
+            .Select(e => _mapper.Map<App.BLL.DTO.Subject, App.Public.DTO.v1.Subject>(e)));
+    }
+    // public async Task<ActionResult<IEnumerable<App.Public.DTO.v1.Subject>>> GetSubjects()
+    // {
+    //     return Ok((await _bll.Subjects.GetAllAsync())
+    //         .Select(e => _mapper.Map<App.BLL.DTO.Subject, App.Public.DTO.v1.Subject>(e)));
+    // }
+
+    // GET: api/Subjects/5
+    [HttpGet("{id}")]
+    public async Task<ActionResult<App.Public.DTO.v1.Subject>> GetSubject(Guid id)
+    {
+        var subject = await _bll.Subjects.FirstOrDefaultAsync(id);
+
+        if (subject == null)
         {
-            _uow = uow;
+            return NotFound();
         }
 
-        // GET: api/Subjects
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<SubjectsDTO>>> GetSubjects()
+        return _mapper.Map<App.BLL.DTO.Subject, App.Public.DTO.v1.Subject>(subject);
+    }
+
+    // PUT: api/Subjects/5
+    // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+    [HttpPut("{id}")]
+    public async Task<IActionResult> PutSubject(Guid id, App.Public.DTO.v1.Subject subject)
+    {
+        if (id != subject.Id)
         {
-            var res = (await _uow.Subjects.GetAllAsync())
-                .Select(x => new SubjectsDTO()
-                {
-                    Id = x.Id,
-                    Name = x.Name,
-                    Description = x.Description,
-                }).ToList();
-            return res;
+            return BadRequest();
         }
-
-        // GET: api/Subjects/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Subject>> GetSubject(Guid id)
+        
+        var subjectFromDb = await _bll.Subjects.FirstOrDefaultAsync(id);
+        if (subjectFromDb == null)
         {
-            var subject = await _uow.Subjects.FirstOrDefaultAsync(id);
-
-            if (subject == null)
-            {
-                return NotFound();
-            }
-
-            return null;
+            return NotFound();
         }
+        _bll.Subjects.Update(_mapper.Map<App.Public.DTO.v1.Subject,App.BLL.DTO.Subject>(subject));
+        await _bll.SaveChangesAsync();
+        return NoContent();
+    }
+    //
+    // // POST: api/Subjects
+    // // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+    [HttpPost]
+    public async Task<ActionResult<App.Public.DTO.v1.Subject>> PostSubject(App.Public.DTO.v1.Subject subject)
+    {
+        var addSubj = _bll.Subjects.Add(_mapper.Map<App.Public.DTO.v1.Subject, App.BLL.DTO.Subject>(subject));
+        await _bll.SaveChangesAsync();
 
-        // PUT: api/Subjects/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutSubject(Guid id, SubjectsDTO subject)
+        var savedSubj = _mapper.Map<App.BLL.DTO.Subject, App.Public.DTO.v1.Subject>(addSubj);
+        
+        return CreatedAtAction("GetSubject", new { id = savedSubj.Id }, savedSubj);
+    }
+    //
+    // // DELETE: api/Subjects/5
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteSubject(Guid id)
+    {
+        var subj = await _bll.Subjects.FirstOrDefaultAsync(id);
+        if (subj == null)
         {
-            if (id != subject.Id)
-            {
-                return BadRequest();
-            }
-
-            var subjectFromDb = await _uow.Subjects.FirstOrDefaultAsync(id);
-            if (subjectFromDb == null)
-            {
-                return NotFound();
-            }
+            return NotFound();
+        }
             
-            subjectFromDb.Name.SetTranslation(subject.Name);
-            subjectFromDb.Description.SetTranslation(subject.Description);
-            // _uow.Subjects.Entry(subjectFromDb).State = EntityState.Modified;
+        _bll.Subjects.Remove(subj);
+        await _bll.SaveChangesAsync();
 
-            try
-            {
-                await _uow.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!await SubjectExists(subject.Id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
-        // POST: api/Subjects
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Subject>> PostSubject(SubjectsDTO subject)
-        {
-            var subj = new Subject();
-            subj.Name.SetTranslation(subject.Name);
-            subj.Description.SetTranslation(subject.Description);
-            // _uow.Subjects.Add(subj);
-            await _uow.SaveChangesAsync();
-
-            return CreatedAtAction("GetSubject", new { id = subj.Id }, subj);
-        }
-
-        // DELETE: api/Subjects/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteSubject(Guid id)
-        {
-            var subject = await _uow.Subjects.FirstOrDefaultAsync(id);
-            if (subject == null)
-            {
-                return NotFound();
-            }
-
-            _uow.Subjects.Remove(subject);
-            await _uow.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private async Task<bool> SubjectExists(Guid id)
-        {
-            return await _uow.Subjects.ExistsAsync(id);
-        }
+        return NoContent();
     }
 }

@@ -70,8 +70,8 @@ namespace App.DAL.EF.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    Description = table.Column<string>(type: "text", nullable: false),
+                    Name = table.Column<LangStr>(type: "jsonb", nullable: false),
+                    Description = table.Column<LangStr>(type: "jsonb", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
@@ -233,22 +233,15 @@ namespace App.DAL.EF.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Name = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false),
-                    Description = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    Name = table.Column<LangStr>(type: "jsonb", nullable: false),
+                    Description = table.Column<LangStr>(type: "jsonb", nullable: false),
                     IsReady = table.Column<bool>(type: "boolean", nullable: false),
                     SubjectId = table.Column<Guid>(type: "uuid", nullable: false),
-                    AppUserId = table.Column<Guid>(type: "uuid", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Quizzes", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Quizzes_AspNetUsers_AppUserId",
-                        column: x => x.AppUserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Quizzes_Subjects_SubjectId",
                         column: x => x.SubjectId,
@@ -290,7 +283,7 @@ namespace App.DAL.EF.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    QuestionText = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    QuestionText = table.Column<LangStr>(type: "jsonb", nullable: false),
                     QuizId = table.Column<Guid>(type: "uuid", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
@@ -363,7 +356,7 @@ namespace App.DAL.EF.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    AnswerText = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    AnswerText = table.Column<LangStr>(type: "jsonb", nullable: false),
                     IsCorrect = table.Column<bool>(type: "boolean", nullable: false),
                     QuestionId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
@@ -471,11 +464,6 @@ namespace App.DAL.EF.Migrations
                 name: "IX_Questions_QuizId",
                 table: "Questions",
                 column: "QuizId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Quizzes_AppUserId",
-                table: "Quizzes",
-                column: "AppUserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Quizzes_SubjectId",
@@ -593,13 +581,13 @@ namespace App.DAL.EF.Migrations
                 name: "Questions");
 
             migrationBuilder.DropTable(
+                name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
                 name: "Topics");
 
             migrationBuilder.DropTable(
                 name: "Quizzes");
-
-            migrationBuilder.DropTable(
-                name: "AspNetUsers");
 
             migrationBuilder.DropTable(
                 name: "Subjects");

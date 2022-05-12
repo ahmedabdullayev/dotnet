@@ -12,4 +12,9 @@ public class UserChoiceService : BaseEntityService<App.BLL.DTO.UserChoice, App.D
     public UserChoiceService(IUserChoiceRepository repository, IMapper<UserChoice, DAL.DTO.UserChoice> mapper) : base(repository, mapper)
     {
     }
+
+    public async Task<UserChoice> GetWithLogic(UserChoice entity)
+    {
+        return Mapper.Map(await Repository.GetWithLogic(Mapper.Map(entity)!))!;
+    }
 }

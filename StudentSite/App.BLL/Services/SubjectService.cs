@@ -12,4 +12,6 @@ public class SubjectService : BaseEntityService<App.BLL.DTO.Subject, App.DAL.DTO
     public SubjectService(ISubjectRepository repository, IMapper<Subject, DAL.DTO.Subject> mapper) : base(repository, mapper)
     {
     }
+
+
 }

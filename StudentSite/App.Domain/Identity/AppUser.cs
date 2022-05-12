@@ -11,7 +11,7 @@ public class AppUser : BaseUser
 
     public ICollection<RefreshToken>? RefreshTokens { get; set; }
 
-    public ICollection<Quiz>? Quizzes { get; set; }
+    // public ICollection<Quiz>? Quizzes { get; set; }
     public ICollection<UserChoice>? UserChoices { get; set; }
     public ICollection<UserQuiz>? UserQuizzes { get; set; }
     public ICollection<UserPost>? UserPosts { get; set; }

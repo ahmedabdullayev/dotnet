@@ -5,6 +5,7 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <UserSecretsId>aspnet-WebApp-668FBDD8-12E0-4A99-A730-05540BB77E86</UserSecretsId>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile> <!-- generate XML for swagger doc -->
     </PropertyGroup>
 
     <ItemGroup>
@@ -13,6 +14,8 @@
         <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="6.0.2" />
         <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.2" />
         <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="6.0.2" />
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.0.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="5.0.0" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.2" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.2">
           <PrivateAssets>all</PrivateAssets>
@@ -20,12 +23,18 @@
         </PackageReference>
         <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.2" />
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.3" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.3.1" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\App.BLL\App.BLL.csproj" />
       <ProjectReference Include="..\App.DAL.EF\App.DAL.EF.csproj" />
+      <ProjectReference Include="..\App.Public.DTO\App.Public.DTO.csproj" />
       <ProjectReference Include="..\Base.Extensions\Base.Extensions.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="DTO" />
     </ItemGroup>
 
 </Project>

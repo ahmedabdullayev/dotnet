@@ -12,5 +12,5 @@ public class Question : DomainEntityId // TODO UPDATE DB!
     public Quiz? Quiz { get; set; }
 
     public ICollection<Answer>? Answers { get; set; }
-    public ICollection<UserChoice>? UserChoices { get; set; }
+    // public ICollection<UserChoice>? UserChoices { get; set; }
 }

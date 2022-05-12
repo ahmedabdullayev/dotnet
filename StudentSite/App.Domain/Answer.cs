@@ -1,12 +1,15 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Base.Domain;
 
 namespace App.Domain;
 
 public class Answer : DomainEntityId
 {
-    [MaxLength(255)]
-    public string AnswerText { get; set; } = default!;
+    
+    [Column(TypeName = "jsonb")] // convert to json and save as string, and when we get it deserialize it and return object
+
+    public LangStr AnswerText { get; set; } = new();
     
     public bool IsCorrect { get; set; }
     

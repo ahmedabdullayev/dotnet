@@ -13,4 +13,6 @@ public class UserPost : DomainEntityMetaId
 
     public Guid AppUserId { get; set; }
     public AppUser? AppUser { get; set; }
+    
+    public ICollection<UserComment>? UserComments { get; set; }
 }

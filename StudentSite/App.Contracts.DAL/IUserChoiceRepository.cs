@@ -10,5 +10,6 @@ public interface IUserChoiceRepository: IEntityRepository<App.DAL.DTO.UserChoice
 
 public interface IUserChoiceRepositoryCustom<TEntity>
 {
-    
+
+    Task<TEntity> GetWithLogic(TEntity entity);
 }
