@@ -2,14 +2,16 @@ using App.Contracts.BLL;
 using Microsoft.AspNetCore.Mvc;
 using AutoMapper;
 using Base.Extensions;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WebApp.ApiControllers;
 
 [ApiController]
 [ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}/[controller]/[action]")]
-// [Authorize(Roles = "Admin", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-// TODO USE BLL AND DTO FRO REST
+[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+// USE BLL AND DTO FRO REST
 public class QuizController : ControllerBase
 {
     private readonly IAppBLL _bll;
@@ -22,12 +24,14 @@ public class QuizController : ControllerBase
     }
 
     // GET: api/Subjects
+    [Authorize(Roles = "admin, user", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [HttpGet]
     public async Task<ActionResult<IEnumerable<App.Public.DTO.v1.Quiz>>> GetQuizzes()
     {
         return Ok((await _bll.Quizzes.GetAllAsync())
             .Select(e => _mapper.Map<App.BLL.DTO.Quiz, App.Public.DTO.v1.Quiz>(e)));
     }
+    [Authorize(Roles = "admin, user", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [HttpGet("{id}")]
     public async Task<ActionResult<IEnumerable<App.Public.DTO.v1.Quiz>>> GetQuizzesBySubject(Guid id)
     {
@@ -36,6 +40,7 @@ public class QuizController : ControllerBase
     }
 
     // GET: api/Subjects/5
+    [Authorize(Roles = "admin, user", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [HttpGet("{id}")]
     public async Task<ActionResult<App.Public.DTO.v1.Quiz>> GetQuiz(Guid id)
     {
@@ -51,6 +56,7 @@ public class QuizController : ControllerBase
 
     // PUT: api/Subjects/5
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+    [Authorize(Roles = "admin", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [HttpPut("{id}")]
     public async Task<IActionResult> PutQuiz(Guid id, App.Public.DTO.v1.Quiz entity)
     {
@@ -71,6 +77,7 @@ public class QuizController : ControllerBase
     //
     // // POST: api/Subjects
     // // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+    [Authorize(Roles = "admin", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [HttpPost]
     public async Task<ActionResult<App.Public.DTO.v1.Quiz>> PostQuiz(App.Public.DTO.v1.Quiz entity)
     {
@@ -83,6 +90,7 @@ public class QuizController : ControllerBase
     }
     //
     // // DELETE: api/Subjects/5
+    [Authorize(Roles = "admin", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteQuiz(Guid id)
     {

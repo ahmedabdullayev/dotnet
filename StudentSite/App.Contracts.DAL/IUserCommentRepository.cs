@@ -10,5 +10,5 @@ public interface IUserCommentRepository : IEntityRepository<App.DAL.DTO.UserComm
 
 public interface IUserCommentRepositoryCustom<TEntity>
 {
-    
+    TEntity AddWithUser(TEntity entity, Guid userId);
 }

@@ -1,6 +1,8 @@
 using App.Contracts.BLL;
 using AutoMapper;
 using Base.Extensions;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebApp.ApiControllers;
@@ -8,6 +10,7 @@ namespace WebApp.ApiControllers;
 [ApiController]
 [ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}/[controller]/[action]")]
+[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 public class TopicController : ControllerBase
 {
     private readonly IAppBLL _bll;
@@ -20,6 +23,7 @@ public class TopicController : ControllerBase
     }
 
     // GET: api/Subjects
+    [Authorize(Roles = "admin, user", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [HttpGet]
     public async Task<ActionResult<IEnumerable<App.Public.DTO.v1.Topic>>> GetTopics()
     {
@@ -28,6 +32,7 @@ public class TopicController : ControllerBase
     }
 
     // GET: api/Subjects/5
+    [Authorize(Roles = "admin, user", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [HttpGet("{id}")]
     public async Task<ActionResult<App.Public.DTO.v1.Topic>> GetTopic(Guid id)
     {
@@ -43,6 +48,7 @@ public class TopicController : ControllerBase
 
     // PUT: api/Subjects/5
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+    [Authorize(Roles = "admin", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [HttpPut("{id}")]
     public async Task<IActionResult> PutTopic(Guid id, App.Public.DTO.v1.Topic entity)
     {
@@ -63,6 +69,7 @@ public class TopicController : ControllerBase
     //
     // // POST: api/Subjects
     // // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+    [Authorize(Roles = "admin", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [HttpPost]
     public async Task<ActionResult<App.Public.DTO.v1.Topic>> PostTopic(App.Public.DTO.v1.Topic entity)
     {
@@ -75,6 +82,7 @@ public class TopicController : ControllerBase
     }
     //
     // // DELETE: api/Subjects/5
+    [Authorize(Roles = "admin", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteTopic(Guid id)
     {

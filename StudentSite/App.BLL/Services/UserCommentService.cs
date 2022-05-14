@@ -12,4 +12,9 @@ public class UserCommentService : BaseEntityService<App.BLL.DTO.UserComment, App
     public UserCommentService(IUserCommentRepository repository, IMapper<UserComment, DAL.DTO.UserComment> mapper) : base(repository, mapper)
     {
     }
+
+    public UserComment AddWithUser(UserComment entity, Guid userId)
+    {
+        return Mapper.Map(Repository.AddWithUser(Mapper.Map(entity)!, userId))!;
+    }
 }

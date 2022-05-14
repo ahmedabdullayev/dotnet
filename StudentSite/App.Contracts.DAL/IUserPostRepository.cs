@@ -10,5 +10,6 @@ public interface IUserPostRepository : IEntityRepository<App.DAL.DTO.UserPost>, 
 
 public interface IUserPostRepositoryCustom<TEntity>
 {
-    
+    TEntity AddWithUser(TEntity entity, Guid userId);
+
 }

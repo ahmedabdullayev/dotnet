@@ -1,5 +1,8 @@
 using App.Contracts.BLL;
 using AutoMapper;
+using Base.Extensions;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebApp.ApiControllers;
@@ -7,6 +10,7 @@ namespace WebApp.ApiControllers;
 [ApiController]
 [ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}/[controller]/[action]")]
+[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 public class UserCommentController : ControllerBase
 {
     private readonly IAppBLL _bll;
@@ -19,6 +23,7 @@ public class UserCommentController : ControllerBase
     }
 
     // GET: api/Subjects
+    [Authorize(Roles = "admin, user", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [HttpGet]
     public async Task<ActionResult<IEnumerable<App.Public.DTO.v1.UserComment>>> GetUserComments()
     {
@@ -27,6 +32,7 @@ public class UserCommentController : ControllerBase
     }
 
     // GET: api/Subjects/5
+    [Authorize(Roles = "admin, user", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [HttpGet("{id}")]
     public async Task<ActionResult<App.Public.DTO.v1.UserComment>> GetUserComment(Guid id)
     {
@@ -42,6 +48,7 @@ public class UserCommentController : ControllerBase
 
     // PUT: api/Subjects/5
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+    [Authorize(Roles = "admin", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [HttpPut("{id}")]
     public async Task<IActionResult> PutUserComment(Guid id, App.Public.DTO.v1.UserComment entity)
     {
@@ -62,10 +69,12 @@ public class UserCommentController : ControllerBase
     //
     // // POST: api/Subjects
     // // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+    [Authorize(Roles = "admin, user", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [HttpPost]
     public async Task<ActionResult<App.Public.DTO.v1.UserComment>> PostUserComment(App.Public.DTO.v1.UserComment entity)
     {
-        var addEntity = _bll.UserComments.Add(_mapper.Map<App.Public.DTO.v1.UserComment, App.BLL.DTO.UserComment>(entity));
+        var addEntity = _bll.UserComments.AddWithUser(
+            _mapper.Map<App.Public.DTO.v1.UserComment, App.BLL.DTO.UserComment>(entity), User.GetUserId());
         await _bll.SaveChangesAsync();
 
         var savedEntity = _mapper.Map<App.BLL.DTO.UserComment, App.Public.DTO.v1.UserComment>(addEntity);
@@ -74,6 +83,7 @@ public class UserCommentController : ControllerBase
     }
     //
     // // DELETE: api/Subjects/5
+    [Authorize(Roles = "admin", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteUserComment(Guid id)
     {

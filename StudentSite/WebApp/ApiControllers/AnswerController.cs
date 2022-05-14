@@ -1,19 +1,30 @@
 using App.Contracts.BLL;
 using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebApp.ApiControllers;
 
+/// <summary>
+/// API Controller for Answers
+/// </summary>
 [ApiController]
 [ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}/[controller]/[action]")]
-// [Authorize(Roles = "Admin", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-// TODO USE BLL AND DTO FRO REST
+[ProducesResponseType(StatusCodes.Status401Unauthorized)]
+[Authorize(Roles = "admin", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+// USE BLL AND DTO FRO REST
 public class AnswerController : ControllerBase
 {
     private readonly IAppBLL _bll;
     private readonly IMapper _mapper;
 
+    /// <summary>
+    /// AnswerCTOR
+    /// </summary>
+    /// <param name="bll"></param>
+    /// <param name="mapper"></param>
     public AnswerController(IAppBLL bll, IMapper mapper)
     {
         _bll = bll;
@@ -21,6 +32,10 @@ public class AnswerController : ControllerBase
     }
 
     // GET: api/Subjects
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
     [HttpGet]
     public async Task<ActionResult<IEnumerable<App.Public.DTO.v1.Answer>>> GetAnswers()
     {

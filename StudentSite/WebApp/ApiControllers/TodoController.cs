@@ -1,6 +1,8 @@
 using App.Contracts.BLL;
 using AutoMapper;
 using Base.Extensions;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebApp.ApiControllers;
@@ -8,7 +10,7 @@ namespace WebApp.ApiControllers;
 [ApiController]
 [ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}/[controller]/[action]")]
-// [Authorize(Roles = "Admin", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+[Authorize(Roles = "admin, user", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 // TODO USE BLL AND DTO FRO REST
 public class TodoController : ControllerBase
 {
@@ -52,13 +54,14 @@ public class TodoController : ControllerBase
         {
             return BadRequest();
         }
-        
-        var entityFromDb = await _bll.Todos.FirstOrDefaultAsync(id);
+        //secured
+        var entityFromDb = await _bll.Todos.FirstWithUser(id, User.GetUserId());
         if (entityFromDb == null)
         {
             return NotFound();
         }
-        _bll.Todos.Update(_mapper.Map<App.Public.DTO.v1.Todo,App.BLL.DTO.Todo>(entity));
+        
+        _bll.Todos.UpdateWithUser(_mapper.Map<App.Public.DTO.v1.Todo,App.BLL.DTO.Todo>(entity), User.GetUserId());
         await _bll.SaveChangesAsync();
         return NoContent();
     }
@@ -66,9 +69,9 @@ public class TodoController : ControllerBase
     // // POST: api/Subjects
     // // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPost]
-    public async Task<ActionResult<App.Public.DTO.v1.Todo>> PostQuestion(App.Public.DTO.v1.Todo entity)
+    public async Task<ActionResult<App.Public.DTO.v1.Todo>> PostTodo(App.Public.DTO.v1.Todo entity)
     {
-        var addEntity = _bll.Todos.Add(_mapper.Map<App.Public.DTO.v1.Todo, App.BLL.DTO.Todo>(entity));
+        var addEntity = _bll.Todos.AddWithUser(_mapper.Map<App.Public.DTO.v1.Todo, App.BLL.DTO.Todo>(entity), User.GetUserId());
         await _bll.SaveChangesAsync();
 
         var savedEntity = _mapper.Map<App.BLL.DTO.Todo, App.Public.DTO.v1.Todo>(addEntity);
@@ -78,9 +81,10 @@ public class TodoController : ControllerBase
     //
     // // DELETE: api/Subjects/5
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteQuestion(Guid id)
+    public async Task<IActionResult> DeleteTodo(Guid id)
     {
-        var entity = await _bll.Todos.FirstOrDefaultAsync(id);
+        //secured
+        var entity = await _bll.Todos.FirstWithUser(id, User.GetUserId());
         if (entity == null)
         {
             return NotFound();

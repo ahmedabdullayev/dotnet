@@ -13,8 +13,13 @@ public class UserChoiceService : BaseEntityService<App.BLL.DTO.UserChoice, App.D
     {
     }
 
-    public async Task<UserChoice> GetWithLogic(UserChoice entity)
+    public async Task<UserChoice> GetWithLogic(UserChoice entity,  Guid userId)
     {
-        return Mapper.Map(await Repository.GetWithLogic(Mapper.Map(entity)!))!;
+        return Mapper.Map(await Repository.GetWithLogic(Mapper.Map(entity)!, userId))!;
+    }
+
+    public UserChoice AddWithUser(UserChoice entity, Guid userId)
+    {
+        return Mapper.Map(Repository.AddWithUser(Mapper.Map(entity)!, userId))!;
     }
 }

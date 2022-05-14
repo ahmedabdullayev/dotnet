@@ -37,7 +37,7 @@ public class QuizRepository: BaseEntityRepository<Quiz, App.Domain.Quiz, AppDbCo
         
         realEntity!.Name.SetTranslation(entity.Name);
         realEntity.Description.SetTranslation(entity.Description);
-        
+        realEntity.IsReady = entity.IsReady;
         return Mapper.Map(RepoDbSet.Update(realEntity).Entity)!;
     }
     // with ownership TODO REMOVE THIS

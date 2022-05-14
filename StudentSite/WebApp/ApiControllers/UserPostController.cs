@@ -1,5 +1,8 @@
 using App.Contracts.BLL;
 using AutoMapper;
+using Base.Extensions;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebApp.ApiControllers;
@@ -7,6 +10,7 @@ namespace WebApp.ApiControllers;
 [ApiController]
 [ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}/[controller]/[action]")]
+[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 public class UserPostController : ControllerBase
 {
     private readonly IAppBLL _bll;
@@ -19,6 +23,7 @@ public class UserPostController : ControllerBase
     }
 
     // GET: api/Subjects
+    [Authorize(Roles = "admin, user", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [HttpGet]
     public async Task<ActionResult<IEnumerable<App.Public.DTO.v1.UserPost>>> GetUserPosts()
     {
@@ -27,6 +32,7 @@ public class UserPostController : ControllerBase
     }
 
     // GET: api/Subjects/5
+    [Authorize(Roles = "admin, user", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [HttpGet("{id}")]
     public async Task<ActionResult<App.Public.DTO.v1.UserPost>> GetUserPost(Guid id)
     {
@@ -42,6 +48,7 @@ public class UserPostController : ControllerBase
 
     // PUT: api/Subjects/5
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+    [Authorize(Roles = "admin", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [HttpPut("{id}")]
     public async Task<IActionResult> PutUserPost(Guid id, App.Public.DTO.v1.UserPost entity)
     {
@@ -62,10 +69,12 @@ public class UserPostController : ControllerBase
     //
     // // POST: api/Subjects
     // // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+    [Authorize(Roles = "admin, user", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [HttpPost]
     public async Task<ActionResult<App.Public.DTO.v1.UserPost>> PostUserPost(App.Public.DTO.v1.UserPost entity)
     {
-        var addEntity = _bll.UserPosts.Add(_mapper.Map<App.Public.DTO.v1.UserPost, App.BLL.DTO.UserPost>(entity));
+        var addEntity = _bll.UserPosts.AddWithUser(
+            _mapper.Map<App.Public.DTO.v1.UserPost, App.BLL.DTO.UserPost>(entity), User.GetUserId());
         await _bll.SaveChangesAsync();
 
         var savedEntity = _mapper.Map<App.BLL.DTO.UserPost, App.Public.DTO.v1.UserPost>(addEntity);
@@ -74,6 +83,7 @@ public class UserPostController : ControllerBase
     }
     //
     // // DELETE: api/Subjects/5
+    [Authorize(Roles = "admin", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteUserPost(Guid id)
     {

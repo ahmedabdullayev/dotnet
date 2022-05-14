@@ -1,5 +1,8 @@
 using App.Contracts.BLL;
 using AutoMapper;
+using Base.Extensions;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebApp.ApiControllers;
@@ -7,6 +10,7 @@ namespace WebApp.ApiControllers;
 [ApiController]
 [ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}/[controller]/[action]")]
+[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 public class UserChoiceController : ControllerBase
 {
     private readonly IAppBLL _bll;
@@ -20,21 +24,26 @@ public class UserChoiceController : ControllerBase
 
     // GET: api/Subjects
     [HttpGet]
+    [Authorize(Roles = "admin, user", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public async Task<ActionResult<IEnumerable<App.Public.DTO.v1.UserChoice>>> GetUserChoices()
     {
         return Ok((await _bll.UserChoices.GetAllAsync())
             .Select(e => _mapper.Map<App.BLL.DTO.UserChoice, App.Public.DTO.v1.UserChoice>(e)));
     }
+    //logic to get next questions
     [HttpPost]
+    [Authorize(Roles = "admin, user", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public async Task<ActionResult<App.Public.DTO.v1.UserChoice>> PostGetUserChoice(App.Public.DTO.v1.UserChoice entity)
     {
-        var getEntity = await _bll.UserChoices.GetWithLogic(_mapper.Map<App.Public.DTO.v1.UserChoice, App.BLL.DTO.UserChoice>(entity));
+        var getEntity = await _bll.UserChoices.GetWithLogic(
+            _mapper.Map<App.Public.DTO.v1.UserChoice, App.BLL.DTO.UserChoice>(entity), User.GetUserId());
 
         var returnedEntity = _mapper.Map<App.BLL.DTO.UserChoice, App.Public.DTO.v1.UserChoice>(getEntity);
         return CreatedAtAction("GetUserChoice", new { id = returnedEntity.Id }, returnedEntity);
     }
     // GET: api/Subjects/5
     [HttpGet("{id}")]
+    [Authorize(Roles = "admin, user", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public async Task<ActionResult<App.Public.DTO.v1.UserChoice>> GetUserChoice(Guid id)
     {
         var entity = await _bll.UserChoices.FirstOrDefaultAsync(id);
@@ -50,6 +59,7 @@ public class UserChoiceController : ControllerBase
     // PUT: api/Subjects/5
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPut("{id}")]
+    [Authorize(Roles = "admin", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public async Task<IActionResult> PutUserChoice(Guid id, App.Public.DTO.v1.UserChoice entity)
     {
         if (id != entity.Id)
@@ -69,10 +79,12 @@ public class UserChoiceController : ControllerBase
     //
     // // POST: api/Subjects
     // // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+    [Authorize(Roles = "admin, user", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [HttpPost]
     public async Task<ActionResult<App.Public.DTO.v1.UserChoice>> PostUserChoice(App.Public.DTO.v1.UserChoice entity)
     {
-        var addEntity = _bll.UserChoices.Add(_mapper.Map<App.Public.DTO.v1.UserChoice, App.BLL.DTO.UserChoice>(entity));
+        var addEntity = _bll.UserChoices.AddWithUser(
+            _mapper.Map<App.Public.DTO.v1.UserChoice, App.BLL.DTO.UserChoice>(entity), User.GetUserId());
         await _bll.SaveChangesAsync();
 
         var savedEntity = _mapper.Map<App.BLL.DTO.UserChoice, App.Public.DTO.v1.UserChoice>(addEntity);
@@ -81,6 +93,7 @@ public class UserChoiceController : ControllerBase
     }
     //
     // // DELETE: api/Subjects/5
+    [Authorize(Roles = "admin", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteUserChoice(Guid id)
     {

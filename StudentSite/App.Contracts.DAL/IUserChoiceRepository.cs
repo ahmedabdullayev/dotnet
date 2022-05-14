@@ -11,5 +11,6 @@ public interface IUserChoiceRepository: IEntityRepository<App.DAL.DTO.UserChoice
 public interface IUserChoiceRepositoryCustom<TEntity>
 {
 
-    Task<TEntity> GetWithLogic(TEntity entity);
+    Task<TEntity> GetWithLogic(TEntity entity, Guid userId);
+    TEntity AddWithUser(TEntity entity, Guid userId);
 }

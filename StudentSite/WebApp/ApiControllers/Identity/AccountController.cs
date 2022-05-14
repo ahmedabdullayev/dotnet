@@ -181,7 +181,7 @@ public class AccountController : ControllerBase
             _logger.LogWarning("User with email {} is not found after registration", registrationData.Email);
             return BadRequest($"User with email {registrationData.Email} is not found after registration");
         }
-
+      
         // get claims based user
         var claimsPrincipal = await _signInManager.CreateUserPrincipalAsync(appUser);
         if (claimsPrincipal == null)
@@ -189,7 +189,8 @@ public class AccountController : ControllerBase
             _logger.LogWarning("Could not get ClaimsPrincipal for user {}", registrationData.Email);
             return NotFound("User/Password problem");
         }
-
+        //add role 
+         await _userManager.AddToRoleAsync(appUser, "user");
         // generate jwt
         var jwt = IdentityExtensions.GenerateJwt(
             claimsPrincipal.Claims,
@@ -198,6 +199,7 @@ public class AccountController : ControllerBase
             _configuration["JWT:Issuer"],
             DateTime.Now.AddMinutes(_configuration.GetValue<int>("JWT:ExpireInMinutes"))
         );
+        
         var userRoles = await _userManager.GetRolesAsync(appUser);
 
         var res = new JwtResponse()
@@ -295,6 +297,17 @@ public class AccountController : ControllerBase
 
         // make new refresh token, obsolete old ones
         var refreshToken = appUser.RefreshTokens.First();
+        Console.WriteLine("--------------");
+        Console.WriteLine("--------------");
+        Console.WriteLine("--------------");
+        Console.WriteLine("--------------");
+        Console.WriteLine("--------------");
+        Console.WriteLine("--------------");
+        Console.WriteLine("--------------");
+        Console.WriteLine("--------------");
+        Console.WriteLine("--------------");
+        Console.WriteLine("-------------- TOKEN: " + refreshToken.Token);
+        
         if (refreshToken.Token == refreshTokenModel.RefreshToken)
         {
             refreshToken.PreviousToken = refreshToken.Token;
@@ -305,13 +318,13 @@ public class AccountController : ControllerBase
 
             await _context.SaveChangesAsync();
         }
-        // var userRoles = await _userManager.GetRolesAsync(appUser);
+        var userRoles = await _userManager.GetRolesAsync(appUser);
 
         var res = new JwtResponse()
         {
             Token = jwt,
             Email = appUser.Email,
-            // Roles = userRoles,
+            Roles = userRoles,
             RefreshToken = refreshToken.Token,
             FirstName = appUser.Firstname,
             LastName = appUser.Lastname,

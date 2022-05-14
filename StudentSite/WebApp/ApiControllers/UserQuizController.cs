@@ -1,5 +1,8 @@
 using App.Contracts.BLL;
 using AutoMapper;
+using Base.Extensions;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebApp.ApiControllers;
@@ -7,6 +10,7 @@ namespace WebApp.ApiControllers;
 [ApiController]
 [ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}/[controller]/[action]")]
+[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 public class UserQuizController : ControllerBase
 {
     private readonly IAppBLL _bll;
@@ -19,6 +23,7 @@ public class UserQuizController : ControllerBase
     }
 
     // GET: api/Subjects
+    [Authorize(Roles = "admin, user", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [HttpGet]
     public async Task<ActionResult<IEnumerable<App.Public.DTO.v1.UserQuiz>>> GetUserQuizzes()
     {
@@ -27,6 +32,7 @@ public class UserQuizController : ControllerBase
     }
 
     // GET: api/Subjects/5
+    [Authorize(Roles = "admin, user", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [HttpGet("{id}")]
     public async Task<ActionResult<App.Public.DTO.v1.UserQuiz>> GetUserQuiz(Guid id)
     {
@@ -42,6 +48,7 @@ public class UserQuizController : ControllerBase
 
     // PUT: api/Subjects/5
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+    [Authorize(Roles = "admin", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [HttpPut("{id}")]
     public async Task<IActionResult> PutUserQuiz(Guid id, App.Public.DTO.v1.UserQuiz entity)
     {
@@ -62,10 +69,11 @@ public class UserQuizController : ControllerBase
     //
     // // POST: api/Subjects
     // // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+    [Authorize(Roles = "admin, user", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [HttpPost]
     public async Task<ActionResult<App.Public.DTO.v1.UserQuiz>> PostUserQuiz(App.Public.DTO.v1.UserQuiz entity)
     {
-        var addEntity = _bll.UserQuizzes.Add(_mapper.Map<App.Public.DTO.v1.UserQuiz, App.BLL.DTO.UserQuiz>(entity));
+        var addEntity = _bll.UserQuizzes.AddWithUser(_mapper.Map<App.Public.DTO.v1.UserQuiz, App.BLL.DTO.UserQuiz>(entity), User.GetUserId());
         await _bll.SaveChangesAsync();
 
         var savedEntity = _mapper.Map<App.BLL.DTO.UserQuiz, App.Public.DTO.v1.UserQuiz>(addEntity);
@@ -74,6 +82,7 @@ public class UserQuizController : ControllerBase
     }
     //
     // // DELETE: api/Subjects/5
+    [Authorize(Roles = "admin", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteUserQuiz(Guid id)
     {

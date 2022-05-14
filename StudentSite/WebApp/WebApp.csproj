@@ -37,4 +37,12 @@
       <Folder Include="DTO" />
     </ItemGroup>
 
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="Views\Todos\Create.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Todos\Delete.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Todos\Details.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Todos\Edit.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Todos\Index.cshtml" />
+    </ItemGroup>
+
 </Project>

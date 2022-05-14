@@ -20,4 +20,10 @@ public class TopicRepository: BaseEntityRepository<App.DAL.DTO.Topic, App.Domain
 
         return (await query.Include(s => s.UserPosts).ToListAsync()).Select(x => Mapper.Map(x)!);
     }
+    public override async Task<Topic?> FirstOrDefaultAsync(Guid id, bool noTracking = true)
+    {
+        var query = CreateQuery(noTracking);
+        query = query.Include(q => q.UserPosts);
+        return  Mapper.Map(await query.FirstOrDefaultAsync(m => m.Id.Equals(id)));
+    }
 }

@@ -7,7 +7,7 @@ public class Todo : DomainEntityId
 {
     public string TodoText { get; set; } = default!;
     
-    public DateTime? Deadline { get; set; }
+    public bool IsDone { get; set; }
 
     public Guid AppUserId { get; set; }
     public AppUser? AppUser { get; set; }

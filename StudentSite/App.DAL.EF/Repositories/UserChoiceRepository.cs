@@ -15,10 +15,12 @@ public class UserChoiceRepository: BaseEntityRepository<App.DAL.DTO.UserChoice, 
     }
     
 
-    public async Task<UserChoice> GetWithLogic(UserChoice entity)
+    public async Task<UserChoice> GetWithLogic(UserChoice entity, Guid userId)
     {
         var quizId = await RepoDbContext.UserQuizzes.Where(m => m.Id == entity.UserQuizId).Select(m => m.QuizId).FirstOrDefaultAsync();
+        Console.WriteLine("quizId: " + quizId);
         var ids = RepoDbSet.Where(m => m.UserQuizId == entity.UserQuizId).Select(m => m.QuestionId).ToList();
+        
         var questionsLasted = RepoDbContext.Questions
             .Where(m => m.QuizId == quizId && !ids.Contains(m.Id)).ToList();
         if (questionsLasted.Count > 0)
@@ -28,5 +30,12 @@ public class UserChoiceRepository: BaseEntityRepository<App.DAL.DTO.UserChoice, 
         }
         
         return entity;
+    }
+
+    public UserChoice AddWithUser(UserChoice entity, Guid userId)
+    {
+        entity.AppUserId = userId;
+        
+        return Mapper.Map(RepoDbSet.Add(Mapper.Map(entity)!).Entity)!;
     }
 }

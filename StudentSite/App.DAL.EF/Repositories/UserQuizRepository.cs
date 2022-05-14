@@ -36,4 +36,11 @@ public class UserQuizRepository: BaseEntityRepository<App.DAL.DTO.UserQuiz, App.
         }
         return  Mapper.Map(domQuery);
     }
+
+    public UserQuiz AddWithUser(UserQuiz entity, Guid userId)
+    {
+        entity.AppUserId = userId;
+        
+        return Mapper.Map(RepoDbSet.Add(Mapper.Map(entity)!).Entity)!;
+    }
 }

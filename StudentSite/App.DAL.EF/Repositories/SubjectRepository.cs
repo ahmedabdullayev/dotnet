@@ -13,14 +13,14 @@ public class SubjectRepository : BaseEntityRepository<App.DAL.DTO.Subject, App.D
     {
     }
 
-    public override Subject Add(Subject entity)
-    {
-        var subj = new App.Domain.Subject();
-        subj.Name.SetTranslation(entity.Name);
-        subj.Description.SetTranslation(entity.Description);
-    
-        return Mapper.Map(RepoDbSet.Add(subj).Entity)!;
-    }
+    // public override Subject Add(Subject entity)
+    // {
+    //     var subj = new App.Domain.Subject();
+    //     subj.Name.SetTranslation(entity.Name);
+    //     subj.Description.SetTranslation(entity.Description);
+    //
+    //     return Mapper.Map(RepoDbSet.Add(subj).Entity)!;
+    // }
 
 
     public override Subject Update(Subject entity)

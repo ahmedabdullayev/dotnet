@@ -263,8 +263,8 @@ namespace App.DAL.EF.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTime?>("Deadline")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<bool>("IsDone")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("TodoText")
                         .IsRequired()

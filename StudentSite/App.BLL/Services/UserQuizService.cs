@@ -12,4 +12,9 @@ public class UserQuizService : BaseEntityService<App.BLL.DTO.UserQuiz, App.DAL.D
     public UserQuizService(IUserQuizRepository repository, IMapper<UserQuiz, DAL.DTO.UserQuiz> mapper) : base(repository, mapper)
     {
     }
+
+    public UserQuiz AddWithUser(UserQuiz entity, Guid userId)
+    {
+        return Mapper.Map(Repository.AddWithUser(Mapper.Map(entity)!, userId))!;
+    }
 }

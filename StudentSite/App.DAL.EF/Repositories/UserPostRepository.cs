@@ -20,4 +20,17 @@ public class UserPostRepository: BaseEntityRepository<App.DAL.DTO.UserPost, App.
 
         return (await query.Include(s => s.UserComments).ToListAsync()).Select(x => Mapper.Map(x)!);
     }
+    public override async Task<UserPost?> FirstOrDefaultAsync(Guid id, bool noTracking = true)
+    {
+        var query = CreateQuery(noTracking);
+        query = query.Include(q => q.UserComments);
+        return  Mapper.Map(await query.FirstOrDefaultAsync(m => m.Id.Equals(id)));
+    }
+
+    public UserPost AddWithUser(UserPost entity, Guid userId)
+    {
+        entity.AppUserId = userId;
+        
+        return Mapper.Map(RepoDbSet.Add(Mapper.Map(entity)!).Entity)!;
+    }
 }

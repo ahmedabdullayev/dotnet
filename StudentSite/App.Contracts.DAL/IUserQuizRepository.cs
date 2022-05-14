@@ -10,5 +10,5 @@ public interface IUserQuizRepository : IEntityRepository<App.DAL.DTO.UserQuiz>, 
 
 public interface IUserQuizRepositoryCustom<TEntity>
 {
-    
+    TEntity AddWithUser(TEntity entity, Guid userId);
 }

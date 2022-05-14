@@ -213,7 +213,7 @@ namespace App.DAL.EF.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     TodoText = table.Column<string>(type: "text", nullable: false),
-                    Deadline = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    IsDone = table.Column<bool>(type: "boolean", nullable: false),
                     AppUserId = table.Column<Guid>(type: "uuid", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
