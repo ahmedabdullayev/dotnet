@@ -24,7 +24,6 @@ public class QuizRepository: BaseEntityRepository<Quiz, App.Domain.Quiz, AppDbCo
         var ent = new App.Domain.Quiz();
         // ent.AppUserId = entity.AppUserId;
         ent.SubjectId = entity.SubjectId;
-        ent.IsReady = entity.IsReady;
         ent.Name.SetTranslation(entity.Name);
         ent.Description.SetTranslation(entity.Description);
         
@@ -37,16 +36,9 @@ public class QuizRepository: BaseEntityRepository<Quiz, App.Domain.Quiz, AppDbCo
         
         realEntity!.Name.SetTranslation(entity.Name);
         realEntity.Description.SetTranslation(entity.Description);
-        realEntity.IsReady = entity.IsReady;
         return Mapper.Map(RepoDbSet.Update(realEntity).Entity)!;
     }
-    // with ownership TODO REMOVE THIS
-    public async Task<IEnumerable<Quiz>> GetAllAsync(Guid userId,bool noTracking = true)
-    {
-        var query = CreateQuery(noTracking);
-        return (await query.Include(m => m.Questions).ToListAsync()).Select(x => Mapper.Map(x)!);
-    }
-
+    
     public async Task<IEnumerable<Quiz>> GetAllAsyncBySubject(Guid subjectId, bool noTracking = true)
     {
         var query = CreateQuery(noTracking);

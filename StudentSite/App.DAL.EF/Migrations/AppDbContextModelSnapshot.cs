@@ -215,9 +215,6 @@ namespace App.DAL.EF.Migrations
                         .IsRequired()
                         .HasColumnType("jsonb");
 
-                    b.Property<bool>("IsReady")
-                        .HasColumnType("boolean");
-
                     b.Property<LangStr>("Name")
                         .IsRequired()
                         .HasColumnType("jsonb");

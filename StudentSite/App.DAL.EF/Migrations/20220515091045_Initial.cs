@@ -235,7 +235,6 @@ namespace App.DAL.EF.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<LangStr>(type: "jsonb", nullable: false),
                     Description = table.Column<LangStr>(type: "jsonb", nullable: false),
-                    IsReady = table.Column<bool>(type: "boolean", nullable: false),
                     SubjectId = table.Column<Guid>(type: "uuid", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },

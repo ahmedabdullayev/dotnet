@@ -13,10 +13,6 @@ public class QuizService : BaseEntityService<App.BLL.DTO.Quiz, App.DAL.DTO.Quiz,
     {
     }
     
-    public async Task<IEnumerable<Quiz>> GetAllAsync(Guid userId, bool noTracking = true)
-    {
-        return (await Repository.GetAllAsync(userId, noTracking)).Select(x => Mapper.Map(x)!);
-    }
 
     public async Task<IEnumerable<Quiz>> GetAllAsyncBySubject(Guid subjectId, bool noTracking = true)
     {

@@ -17,4 +17,5 @@ public class UserQuizService : BaseEntityService<App.BLL.DTO.UserQuiz, App.DAL.D
     {
         return Mapper.Map(Repository.AddWithUser(Mapper.Map(entity)!, userId))!;
     }
+    
 }

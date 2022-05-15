@@ -11,7 +11,6 @@ public class Quiz : DomainEntityId
     [MaxLength(255)]
     public string Description { get; set; } = default!;
 
-    public bool IsReady { get; set; }
 
     public Guid SubjectId { get; set; } 
     // public Subject? Subject { get; set; }

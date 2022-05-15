@@ -43,7 +43,7 @@ public class SubjectRepository : BaseEntityRepository<App.DAL.DTO.Subject, App.D
     public override async Task<Subject?> FirstOrDefaultAsync(Guid id, bool noTracking = true)
     {
         var query = CreateQuery(noTracking);
-         query = query.Include(q => q.Quizzes);
+        query = query.Include(q => q.Quizzes);
         return  Mapper.Map(await query.FirstOrDefaultAsync(m => m.Id.Equals(id)));
     }
 }

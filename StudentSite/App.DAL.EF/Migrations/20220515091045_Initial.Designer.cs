@@ -13,7 +13,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace App.DAL.EF.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20220513070808_Initial")]
+    [Migration("20220515091045_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -216,9 +216,6 @@ namespace App.DAL.EF.Migrations
                     b.Property<LangStr>("Description")
                         .IsRequired()
                         .HasColumnType("jsonb");
-
-                    b.Property<bool>("IsReady")
-                        .HasColumnType("boolean");
 
                     b.Property<LangStr>("Name")
                         .IsRequired()

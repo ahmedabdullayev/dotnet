@@ -8,6 +8,5 @@ public interface IQuizRepository : IEntityRepository<App.DAL.DTO.Quiz>, IQuizRep
 
 public interface IQuizRepositoryCustom<TEntity>
 {
-    Task<IEnumerable<TEntity>> GetAllAsync(Guid userId, bool noTracking = true);
     Task<IEnumerable<TEntity>> GetAllAsyncBySubject(Guid subjectId, bool noTracking = true);
 }

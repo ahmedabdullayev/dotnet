@@ -12,7 +12,6 @@ public class Quiz : DomainEntityMetaId
     [Column(TypeName = "jsonb")] // convert to json and save as string, and when we get it deserialize it and return object
     public LangStr Description { get; set; } = new();
 
-    public bool IsReady { get; set; }
 
     public Guid SubjectId { get; set; }
     public Subject? Subject { get; set; }

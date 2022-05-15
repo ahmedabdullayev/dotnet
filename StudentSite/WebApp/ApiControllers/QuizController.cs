@@ -31,6 +31,8 @@ public class QuizController : ControllerBase
         return Ok((await _bll.Quizzes.GetAllAsync())
             .Select(e => _mapper.Map<App.BLL.DTO.Quiz, App.Public.DTO.v1.Quiz>(e)));
     }
+    
+    
     [Authorize(Roles = "admin, user", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [HttpGet("{id}")]
     public async Task<ActionResult<IEnumerable<App.Public.DTO.v1.Quiz>>> GetQuizzesBySubject(Guid id)

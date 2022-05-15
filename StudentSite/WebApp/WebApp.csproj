@@ -43,6 +43,11 @@
       <_ContentIncludedByDefault Remove="Views\Todos\Details.cshtml" />
       <_ContentIncludedByDefault Remove="Views\Todos\Edit.cshtml" />
       <_ContentIncludedByDefault Remove="Views\Todos\Index.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Quizzes\Create.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Quizzes\Delete.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Quizzes\Details.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Quizzes\Edit.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Quizzes\Index.cshtml" />
     </ItemGroup>
 
 </Project>
