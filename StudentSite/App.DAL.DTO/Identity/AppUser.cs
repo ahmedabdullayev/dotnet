@@ -1,11 +1,9 @@
 using System.ComponentModel.DataAnnotations;
-using Base.Contracts.Domain;
 using Base.Domain;
-using Microsoft.AspNetCore.Identity;
 
 namespace App.DAL.DTO.Identity;
 
-public class AppUser: IdentityUser<Guid>, IDomainEntityId
+public class AppUser: DomainEntityId
 {
     [StringLength(128)] public string FirstName { get; set; } = default!;
     [StringLength(128)] public string LastName { get; set; } = default!;

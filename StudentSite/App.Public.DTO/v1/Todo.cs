@@ -10,7 +10,7 @@ public class Todo : DomainEntityId
     public bool IsDone { get; set; }
 
     public Guid AppUserId { get; set; }
-    public AppUser? AppUser { get; set; }
+    // public AppUser? AppUser { get; set; }
     
     
 }

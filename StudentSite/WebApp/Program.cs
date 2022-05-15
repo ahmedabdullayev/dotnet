@@ -131,8 +131,8 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
 
 var app = builder.Build();
 
+AppDataHelperForTesting.SetupAppDataTesting(app, app.Environment, app.Configuration);
 AppDataHelper.SetupAppData(app, app.Environment, app.Configuration);
-
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -181,3 +181,9 @@ app.MapControllerRoute(
 app.MapRazorPages();
 
 app.Run();
+
+//for testing
+public partial class Program
+{
+    
+}

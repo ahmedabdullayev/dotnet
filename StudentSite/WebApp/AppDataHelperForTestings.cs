@@ -6,9 +6,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace WebApp;
 
-public class AppDataHelper
+public class AppDataHelperForTesting
 {
-    public static void SetupAppData(IApplicationBuilder app, IWebHostEnvironment env, IConfiguration configuration)
+    public static void SetupAppDataTesting(IApplicationBuilder app, IWebHostEnvironment env, IConfiguration configuration)
     {
         using var serviceScope = app.
             ApplicationServices.
@@ -22,23 +22,8 @@ public class AppDataHelper
         {
             throw new ApplicationException("Problem in services. No db context.");
         }
-        //FOR TESTING
-        if (context.Database.ProviderName == "Microsoft.EntityFrameworkCore.InMemory") return;
-        
-        // TODO - Check database state
-        // can't connect - wrong address
-        // can't connect - wrong user/pass
-        // can connect - but no database
-        // can connect - there is database
 
-        if (configuration.GetValue<bool>("DataInitialization:DropDatabase"))
-        {
-            context.Database.EnsureDeleted();
-        }
-        if (configuration.GetValue<bool>("DataInitialization:MigrateDatabase"))
-        {
-            context.Database.Migrate();
-        }
+        
         if (configuration.GetValue<bool>("DataInitialization:SeedIdentity"))
         {
             using var userManager = serviceScope.ServiceProvider.GetService<UserManager<AppUser>>();
@@ -110,22 +95,7 @@ public class AppDataHelper
                 }
             }
         }
-
-        if (configuration.GetValue<bool>("DataInitialization:SeedData"))
-        {
-            // TODO
-            // var f = new FooBar
-            // {
-            //     Name =
-            //     {
-            //         ["en"] = "English",
-            //         ["et"] = "Eesti",
-            //         ["ru"] = "Русский",
-            //     }
-            // };
-            // context.FooBars.Add(f);
-            // context.SaveChanges();
-        }
+        
     }
 
 }

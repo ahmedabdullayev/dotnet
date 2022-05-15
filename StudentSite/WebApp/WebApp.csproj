@@ -7,6 +7,10 @@
         <UserSecretsId>aspnet-WebApp-668FBDD8-12E0-4A99-A730-05540BB77E86</UserSecretsId>
         <GenerateDocumentationFile>true</GenerateDocumentationFile> <!-- generate XML for swagger doc -->
     </PropertyGroup>
+    
+    <ItemGroup>
+        <InternalsVisibleTo Include="Testing.WebApp" />
+    </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
