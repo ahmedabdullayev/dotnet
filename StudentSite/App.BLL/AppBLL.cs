@@ -67,4 +67,5 @@ public class AppBLL: BaseBll<IAppUnitOfWork> ,IAppBLL
     private IUserQuizService? _userQuizzes;
     public IUserQuizService UserQuizzes =>
         _userQuizzes ??= new UserQuizService(UnitOfWork.UserQuizzes, new UserQuizMapper(_mapper));
+
 }

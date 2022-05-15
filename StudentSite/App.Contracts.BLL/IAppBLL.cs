@@ -15,4 +15,5 @@ public interface IAppBLL : IBLL
     IUserCommentService UserComments { get; }
     IUserPostService UserPosts { get; }
     IUserQuizService UserQuizzes { get; }
+    
 }

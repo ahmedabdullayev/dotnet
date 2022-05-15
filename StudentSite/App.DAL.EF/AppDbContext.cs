@@ -1,5 +1,6 @@
 using App.Domain;
 using App.Domain.Identity;
+using Base.Domain;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,6 +8,7 @@ namespace App.DAL.EF;
 
 public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid>
 {
+    public DbSet<AppUser> AppUsers { get; set; } = default!;
     public DbSet<RefreshToken> RefreshTokens { get; set; } = default!;
 
     //For quiz feature
@@ -89,4 +91,62 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid>
             }
         }
     }
+
+    protected override void OnModelCreating(ModelBuilder builder)
+    {
+        base.OnModelCreating(builder);
+        if (Database.ProviderName == "Microsoft.EntityFrameworkCore.InMemory")
+        {
+            builder
+                .Entity<App.Domain.Answer>()
+                .Property(e => e.AnswerText)
+                .HasConversion(v => SerialiseLangStr(v),
+                    v => DeserializeLangStr(v));
+            
+            builder
+                .Entity<App.Domain.Question>()
+                .Property(e => e.QuestionText)
+                .HasConversion(v => SerialiseLangStr(v),
+                    v => DeserializeLangStr(v));
+            ///
+            builder
+                .Entity<App.Domain.Quiz>()
+                .Property(e => e.Name)
+                .HasConversion(v => SerialiseLangStr(v),
+                    v => DeserializeLangStr(v));
+            builder
+                .Entity<App.Domain.Quiz>()
+                .Property(e => e.Description)
+                .HasConversion(v => SerialiseLangStr(v),
+                    v => DeserializeLangStr(v));
+            ///
+            builder
+                .Entity<App.Domain.Subject>()
+                .Property(e => e.Name)
+                .HasConversion(v => SerialiseLangStr(v),
+                    v => DeserializeLangStr(v));
+            builder
+                .Entity<App.Domain.Subject>()
+                .Property(e => e.Description)
+                .HasConversion(v => SerialiseLangStr(v),
+                    v => DeserializeLangStr(v));
+            ///
+            builder
+                .Entity<App.Domain.Topic>()
+                .Property(e => e.Name)
+                .HasConversion(v => SerialiseLangStr(v),
+                    v => DeserializeLangStr(v));
+            builder
+                .Entity<App.Domain.Topic>()
+                .Property(e => e.Description)
+                .HasConversion(v => SerialiseLangStr(v),
+                    v => DeserializeLangStr(v));
+        }
+    }
+    
+    
+    private static string SerialiseLangStr(LangStr lStr) => System.Text.Json.JsonSerializer.Serialize(lStr);
+
+    private static LangStr DeserializeLangStr(string jsonStr) =>
+        System.Text.Json.JsonSerializer.Deserialize<LangStr>(jsonStr) ?? new LangStr();
 }
