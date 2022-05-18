@@ -22,6 +22,7 @@ public class IntegrationTestTodosApiController : IClassFixture<CustomWebApplicat
     private readonly CustomWebApplicationFactory<Program> _factory;
     private readonly ITestOutputHelper _testOutputHelper;
     private string? _jwt;
+    private string? _refreshToken;
     
     public IntegrationTestTodosApiController(CustomWebApplicationFactory<Program> factory,
         ITestOutputHelper testOutputHelper)
@@ -29,10 +30,6 @@ public class IntegrationTestTodosApiController : IClassFixture<CustomWebApplicat
         _factory = factory;
         _testOutputHelper = testOutputHelper;
         _client = factory
-            .WithWebHostBuilder(builder =>
-            {
-                builder.UseSetting("test_database_name", Guid.NewGuid().ToString());
-            })
             .CreateClient(new WebApplicationFactoryClientOptions()
                 {
                     // dont follow redirects
@@ -65,6 +62,7 @@ public class IntegrationTestTodosApiController : IClassFixture<CustomWebApplicat
     {
         //REGISTER
         var jwt = "";
+        var refreshToken = "";
         // Arrange
         var uri = "/api/v1/identity/Account/Register/";
         var contentType = new MediaTypeWithQualityHeaderValue
@@ -93,14 +91,45 @@ public class IntegrationTestTodosApiController : IClassFixture<CustomWebApplicat
             var content = await response.Content.ReadAsStringAsync();
             var resp = JsonConvert.DeserializeObject<JwtResponse>(content);
             jwt = resp!.Token;
+            refreshToken = resp!.RefreshToken;
             _jwt = resp.Token;
+            _refreshToken = resp.RefreshToken;
         }
         // ASSERT
         Assert.NotEmpty(jwt);
+        Assert.NotEmpty(refreshToken);
+        
+        //refreshtoken
+        var refreshTokenModel = new RefreshTokenModel()
+        {
+            Jwt = jwt,
+            RefreshToken = refreshToken
+        };
+        string jwtTokenInfo = JsonConvert.SerializeObject(refreshTokenModel);
 
+        uri = "/api/v1/identity/account/refreshtoken";
+        contentData = new StringContent(jwtTokenInfo, 
+            Encoding.UTF8, "application/json");
+        response =  _client.PostAsync(uri, contentData).Result;
+
+        response.EnsureSuccessStatusCode();
+        
+        if (response.IsSuccessStatusCode)
+        {
+            var content = await response.Content.ReadAsStringAsync();
+            var resp = JsonConvert.DeserializeObject<JwtResponse>(content);
+            jwt = resp!.Token;
+            refreshToken = resp!.RefreshToken;
+            _jwt = resp.Token;
+            _refreshToken = resp.RefreshToken;
+        }
+        // ASSERT
+        Assert.NotEmpty(jwt);
+        Assert.NotEmpty(refreshToken);
+        
+        // test JWT - Access todos page by jwt
         uri = "/api/v1/todo/GetTodos";
 
-        // test JWT - Access todos page by jwt
         _client.DefaultRequestHeaders.Authorization =
             new AuthenticationHeaderValue("Bearer",
                 _jwt);
