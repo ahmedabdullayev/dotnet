@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using App.DAL.EF;
+using App.Domain;
 using App.Domain.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -24,7 +25,7 @@ public class AppDataHelperForTesting
         }
 
         
-        if (configuration.GetValue<bool>("DataInitialization:SeedIdentity"))
+        if (configuration.GetValue<bool>("DataInitialization:SeedDataTests"))
         {
             using var userManager = serviceScope.ServiceProvider.GetService<UserManager<AppUser>>();
             using var roleManager = serviceScope.ServiceProvider.GetService<RoleManager<AppRole>>();
@@ -94,6 +95,26 @@ public class AppDataHelperForTesting
 
                 }
             }
+            
+            var f = new Topic()
+            {
+                Id = new Guid(),
+                Name =
+                {
+                    ["en-GB"] = "America",
+                    ["et-EE"] = "Amerika",
+                    ["ru-RU"] = "Америка",
+                },
+                Description =
+                {
+                    ["en-GB"] = "Living in America disscusion",
+                    ["et-EE"] = "Ameerikas elamise arutelu",
+                    ["ru-RU"] = "Обсуждение жизни в Америке",
+                },
+            };
+            context.Topics.Add(f);
+            context.SaveChanges();
+            
         }
         
     }
