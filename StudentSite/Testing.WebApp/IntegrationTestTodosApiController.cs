@@ -61,7 +61,7 @@ public class IntegrationTestTodosApiController : IClassFixture<CustomWebApplicat
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
     [Fact]
-    public async Task Get_FooBars_API_Returns_Single_Element()
+    public async Task Main_flow()
     {
         //REGISTER
         var jwt = "";

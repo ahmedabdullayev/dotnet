@@ -34,7 +34,7 @@ public class SubjectsController : ControllerBase
 
     // GET: api/Subjects
     /// <summary>
-    /// 
+    /// Return all subjects
     /// </summary>
     /// <returns></returns>
     [HttpGet]
@@ -45,11 +45,7 @@ public class SubjectsController : ControllerBase
         return Ok((await _bll.Subjects.GetAllAsync())
             .Select(e => _mapper.Map<App.BLL.DTO.Subject, App.Public.DTO.v1.Subject>(e)));
     }
-    // public async Task<ActionResult<IEnumerable<App.Public.DTO.v1.Subject>>> GetSubjects()
-    // {
-    //     return Ok((await _bll.Subjects.GetAllAsync())
-    //         .Select(e => _mapper.Map<App.BLL.DTO.Subject, App.Public.DTO.v1.Subject>(e)));
-    // }
+
 
     // GET: api/Subjects/5
     /// <summary>

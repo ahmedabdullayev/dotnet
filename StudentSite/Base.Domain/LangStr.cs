@@ -2,7 +2,7 @@ namespace Base.Domain;
 
 public class LangStr : Dictionary<string, string>
 {
-    private const string DefaultCulture = "en";
+    private const string DefaultCulture = "en-GB";
     public LangStr()
     {
     }
@@ -35,7 +35,7 @@ public class LangStr : Dictionary<string, string>
             return this[DefaultCulture];
         }
 
-        return null;
+        return this[DefaultCulture]; // or return null
     }
     public void SetTranslation(string value)
     {

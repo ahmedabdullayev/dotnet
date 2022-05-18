@@ -7,15 +7,26 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace WebApp.ApiControllers;
 
+/// <summary>
+/// Api controller for user post
+/// </summary>
 [ApiController]
 [ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}/[controller]/[action]")]
-[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+[Authorize(Roles = "admin, user", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+[Consumes("application/json")]
+[Produces("application/json")]
+[ProducesResponseType(StatusCodes.Status401Unauthorized)]
 public class UserPostController : ControllerBase
 {
     private readonly IAppBLL _bll;
     private readonly IMapper _mapper;
 
+    /// <summary>
+    /// User post CTOR
+    /// </summary>
+    /// <param name="bll"></param>
+    /// <param name="mapper"></param>
     public UserPostController(IAppBLL bll, IMapper mapper)
     {
         _bll = bll;
@@ -23,17 +34,28 @@ public class UserPostController : ControllerBase
     }
 
     // GET: api/Subjects
-    [Authorize(Roles = "admin, user", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    /// <summary>
+    /// Get user posts(not used)
+    /// </summary>
+    /// <returns></returns>
+    [Authorize(Roles = "admin", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [HttpGet]
+    [ProducesResponseType(typeof(IEnumerable<App.Public.DTO.v1.UserPost>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IEnumerable<App.Public.DTO.v1.UserPost>>> GetUserPosts()
     {
         return Ok((await _bll.UserPosts.GetAllAsync())
             .Select(e => _mapper.Map<App.BLL.DTO.UserPost, App.Public.DTO.v1.UserPost>(e)));
     }
 
-    // GET: api/Subjects/5
+    /// <summary>
+    /// Return one post with comments
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
     [Authorize(Roles = "admin, user", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [HttpGet("{id}")]
+    [ProducesResponseType(typeof(App.Public.DTO.v1.UserPost), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<App.Public.DTO.v1.UserPost>> GetUserPost(Guid id)
     {
         var entity = await _bll.UserPosts.FirstOrDefaultAsync(id);
@@ -48,8 +70,16 @@ public class UserPostController : ControllerBase
 
     // PUT: api/Subjects/5
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+    /// <summary>
+    /// Update user post(not used)
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="entity"></param>
+    /// <returns></returns>
     [Authorize(Roles = "admin", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [HttpPut("{id}")]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> PutUserPost(Guid id, App.Public.DTO.v1.UserPost entity)
     {
         if (id != entity.Id)
@@ -69,8 +99,14 @@ public class UserPostController : ControllerBase
     //
     // // POST: api/Subjects
     // // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+    /// <summary>
+    /// Create userpost by userid
+    /// </summary>
+    /// <param name="entity"></param>
+    /// <returns></returns>
     [Authorize(Roles = "admin, user", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [HttpPost]
+    [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<ActionResult<App.Public.DTO.v1.UserPost>> PostUserPost(App.Public.DTO.v1.UserPost entity)
     {
         var addEntity = _bll.UserPosts.AddWithUser(
@@ -83,8 +119,15 @@ public class UserPostController : ControllerBase
     }
     //
     // // DELETE: api/Subjects/5
+    /// <summary>
+    /// Delete user post(not used)
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
     [Authorize(Roles = "admin", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [HttpDelete("{id}")]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> DeleteUserPost(Guid id)
     {
         var entity = await _bll.UserPosts.FirstOrDefaultAsync(id);

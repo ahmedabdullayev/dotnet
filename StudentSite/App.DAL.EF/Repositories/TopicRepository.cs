@@ -13,6 +13,15 @@ public class TopicRepository: BaseEntityRepository<App.DAL.DTO.Topic, App.Domain
     {
     }
 
+    public override Topic Update(Topic entity)
+    {
+        var realEntity = RepoDbSet.FindAsync(entity.Id).Result;
+
+        realEntity!.Name.SetTranslation(entity.Name);
+        realEntity.Description.SetTranslation(entity.Description);
+        
+        return Mapper.Map(RepoDbSet.Update(realEntity).Entity)!;
+    }
 
     public override async Task<IEnumerable<Topic>> GetAllAsync(bool noTracking = true)
     {

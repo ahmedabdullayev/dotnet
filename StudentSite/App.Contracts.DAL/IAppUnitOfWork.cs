@@ -4,6 +4,7 @@ namespace App.Contracts.DAL;
 
 public interface IAppUnitOfWork : IUnitOfWork
 {
+    IAppUserRepository AppUsers { get; }
     IAnswerRepository Answers { get; }
     IQuestionRepository Questions { get; }
     IQuizRepository Quizzes { get; }

@@ -17,7 +17,10 @@ public class UserChoiceRepository: BaseEntityRepository<App.DAL.DTO.UserChoice, 
 
     public async Task<UserChoice> GetWithLogic(UserChoice entity, Guid userId)
     {
-        var quizId = await RepoDbContext.UserQuizzes.Where(m => m.Id == entity.UserQuizId).Select(m => m.QuizId).FirstOrDefaultAsync();
+        var quizId = await RepoDbContext.UserQuizzes
+            .Where(m => m.Id == entity.UserQuizId)
+            .Where(l => l.AppUserId == userId)//secured
+            .Select(m => m.QuizId).FirstOrDefaultAsync();
         Console.WriteLine("quizId: " + quizId);
         var ids = RepoDbSet.Where(m => m.UserQuizId == entity.UserQuizId).Select(m => m.QuestionId).ToList();
         

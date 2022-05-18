@@ -100,7 +100,7 @@ public class BaseEntityRepository<TDalEntity, TDomainEntity, TKey, TDbContext> :
         return RepoDbSet.Any(a => a.Id.Equals(id));
     }
 
-    // TODO PLEASE CHECK IT
+    // //
     public virtual EntityEntry<TDalEntity> Entry(TDalEntity entity)
     {
        return RepoDbContext.Entry(entity);

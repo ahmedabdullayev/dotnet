@@ -5,6 +5,7 @@ namespace App.Contracts.BLL;
 
 public interface IAppBLL : IBLL
 {
+    IAppUserService AppUsers { get; }
     IAnswerService Answers { get; }
     IQuestionService Questions { get; }
     IQuizService Quizzes { get; }

@@ -13,13 +13,19 @@ public QuestionRepository(AppDbContext dbContext, IMapper<App.DAL.DTO.Question,A
 {
 }
 
-    public override async Task<IEnumerable<Question>> GetAllAsync(bool noTracking = true)
+public override async Task<IEnumerable<Question>> GetAllAsync(bool noTracking = true)
     {
         var query = CreateQuery(noTracking);
 
         return (await query.Include(s => s.Answers).ToListAsync()).Select(x => Mapper.Map(x)!);
     }
-    
+    public override Question Update(Question entity)
+    {
+        var realEntity = RepoDbSet.FindAsync(entity.Id).Result;
+
+        realEntity!.QuestionText.SetTranslation(entity.QuestionText);
+        return Mapper.Map(RepoDbSet.Update(realEntity).Entity)!;
+    }
     public override async Task<Question?> FirstOrDefaultAsync(Guid id, bool noTracking = true)
     {
         var query = CreateQuery(noTracking);

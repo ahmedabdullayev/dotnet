@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Security.Claims;
+using App.Contracts.BLL;
 using App.DAL.EF;
 using App.Domain.Identity;
 using App.Public.DTO.v1;
@@ -13,6 +14,9 @@ using Microsoft.EntityFrameworkCore;
 using AppUser = App.Domain.Identity.AppUser;
 
 namespace WebApp.ApiControllers.Identity;
+/// <summary>
+/// Api controller for Accounts
+/// </summary>
 [ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}/identity/[controller]/[action]")]
 [ApiController]
@@ -24,15 +28,26 @@ public class AccountController : ControllerBase
     private readonly IConfiguration _configuration;
     private readonly Random _rnd = new();
     private readonly AppDbContext _context;
+    private readonly IAppBLL _bll;
 
+    /// <summary>
+    /// Account controller
+    /// </summary>
+    /// <param name="signInManager"></param>
+    /// <param name="userManager"></param>
+    /// <param name="configuration"></param>
+    /// <param name="logger"></param>
+    /// <param name="context"></param>
+    /// <param name="bll"></param>
     public AccountController(SignInManager<AppUser> signInManager, UserManager<AppUser> userManager,
-        IConfiguration configuration, ILogger<AccountController> logger, AppDbContext context)
+        IConfiguration configuration, ILogger<AccountController> logger, AppDbContext context, IAppBLL bll)
     {
         _signInManager = signInManager;
         _userManager = userManager;
         _configuration = configuration;
         _logger = logger;
         _context = context;
+        _bll = bll;
     }
 
     /// <summary>
@@ -315,6 +330,11 @@ public class AccountController : ControllerBase
     // }
 
 
+    /// <summary>
+    /// Refresh the token
+    /// </summary>
+    /// <param name="refreshTokenModel"></param>
+    /// <returns></returns>
     [HttpPost]
     public async Task<ActionResult> RefreshToken([FromBody] RefreshTokenModel refreshTokenModel)
     {

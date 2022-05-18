@@ -38,9 +38,7 @@ public class TestTodoUnitTest
     public IAppBLL GetBLL()
     {
         var context = new AppDbContext(optionsBuilder.Options);
-        // context.Database.EnsureDeleted();
-        // context.Database.EnsureCreated();
-            
+
         var mockMapper = new MapperConfiguration(cfg =>
         {
             cfg.AddProfile<App.DAL.EF.AutomapperConfig>();
@@ -58,7 +56,8 @@ public class TestTodoUnitTest
         var testBll = GetBLL();
 
         var userForTesting = await CreateUserForTesting("ahmed","abdu");
-
+        _testOutputHelper.WriteLine(userForTesting.Id.ToString());
+        
         Guid guid = Guid.NewGuid();
         var todo = testBll.Todos.Add(new Todo
         {
@@ -68,8 +67,31 @@ public class TestTodoUnitTest
             AppUserId = userForTesting.Id,
         });
         await testBll.SaveChangesAsync();
-        var result = await _ctx.Todos.AnyAsync(e => e.Id == guid);
-        Assert.True(result);
+        var existsAsync = await testBll.Todos.ExistsAsync(guid);
+        // or check with that: var result = await _ctx.Todos.AnyAsync(e => e.Id == guid);
+        Assert.True(existsAsync);
+    }
+    
+    [Fact]
+    public async Task Action_Test_OneTodo()
+    {
+        var testBll = GetBLL();
+
+        var userForTesting = await CreateUserForTesting("ahmed","abdu");
+
+        Guid guid = Guid.NewGuid();
+        var todo = testBll.Todos.Add(new Todo
+        {
+            Id = new Guid(guid.ToString()),
+            TodoText = "HW10",
+            IsDone = false,
+            AppUserId = userForTesting.Id,
+        });
+        await testBll.SaveChangesAsync();
+        var firstOrDefault = await testBll.Todos.FirstOrDefaultAsync(guid);
+        Assert.NotNull(firstOrDefault);
+        Assert.Equal("HW10", firstOrDefault!.TodoText);
+    
     }
 
     [Fact]
@@ -91,7 +113,7 @@ public class TestTodoUnitTest
         // To avoid tracing issues
         testBll = GetBLL();
         var created = await testBll.Todos.FirstWithUser(guid, userForTesting.Id);
-        _testOutputHelper.WriteLine(created!.TodoText);
+        // _testOutputHelper.WriteLine(created!.TodoText);
         //TEST
         Assert.NotNull(created);
         Assert.Equal("HW3 Käver for next lecture", created!.TodoText);
@@ -122,7 +144,7 @@ public class TestTodoUnitTest
         // To avoid tracing issues
         testBll = GetBLL();
         var created = await testBll.Todos.FirstWithUser(guid, userForTesting.Id);
-        _testOutputHelper.WriteLine(created!.TodoText);
+        // _testOutputHelper.WriteLine(created!.TodoText);
         //TEST
         Assert.NotNull(created);
         Assert.Equal("HW3 Käver for next lecture", created!.TodoText);
@@ -177,18 +199,31 @@ public class TestTodoUnitTest
         Assert.Equal("Math for Laur", secondTodo.TodoText);
 
     }
-    private async Task<AppUser> CreateUserForTesting(string name, string sname)
+    private async Task<App.BLL.DTO.Identity.AppUser> CreateUserForTesting(string name, string sname)
     {
-        var user = new App.Domain.Identity.AppUser()
+        var testBll = GetBLL();
+        var user = new App.BLL.DTO.Identity.AppUser
         {
-            Firstname = name,
-            Lastname = sname,
-            Email = name+sname+"@mail.com"
+            UserName = name + sname,
+            FirstName = name,
+            LastName = sname,
+            Email = name + sname + "@mail.com"
         };
-        _ctx.AppUsers.Add(user);
-        await _ctx.SaveChangesAsync();
+        testBll.AppUsers.Add(user);
+        await testBll.SaveChangesAsync();
+        var allAsync = await testBll.AppUsers.GetAllAsync();
+        var firstOrDefault = allAsync.FirstOrDefault();
+        // _testOutputHelper.WriteLine(firstOrDefault!.Id.ToString());
+        // // var user = new App.Domain.Identity.AppUser()
+        // // {
+        // //     Firstname = name,
+        // //     Lastname = sname,
+        // //     Email = name+sname+"@mail.com"
+        // // };
+        // // _ctx.AppUsers.Add(user);
+        // // await _ctx.SaveChangesAsync();
 
-        return user;
+        return firstOrDefault!;
     }
     
 }

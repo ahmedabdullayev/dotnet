@@ -1,4 +1,5 @@
 using App.BLL.Mappers;
+using App.BLL.Mappers.Identity;
 using App.BLL.Services;
 using App.Contracts.BLL;
 using App.Contracts.BLL.Services;
@@ -27,6 +28,14 @@ public class AppBLL: BaseBll<IAppUnitOfWork> ,IAppBLL
     {
         return UnitOfWork.SaveChanges();
     }
+
+    // private IAppUserService? _users;
+    // public IAppUserService Users =>
+    // _users ?? = new AppUserService(UnitOfWork)
+
+    private IAppUserService? _appUsers;
+    public IAppUserService AppUsers =>
+        _appUsers ??= new AppUserService(UnitOfWork.AppUsers, new AppUserMapper(_mapper));
 
     private IAnswerService? _answers;
     public IAnswerService Answers =>

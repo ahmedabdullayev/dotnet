@@ -1,5 +1,6 @@
 using App.Contracts.DAL;
 using App.DAL.EF.Mappers;
+using App.DAL.EF.Mappers.Identity;
 using App.DAL.EF.Repositories;
 using Base.DAL.EF;
 
@@ -12,6 +13,12 @@ public class AppUOW : BaseUOW<AppDbContext>, IAppUnitOfWork{
         _mapper = mapper;
     }
 
+    private IAppUserRepository? _appUsers;
+
+    public IAppUserRepository AppUsers =>
+        _appUsers ??= new AppUserRepository(UOWDbContext, new AppUserMapper(_mapper));
+
+    
     private IAnswerRepository? _answers;
     public virtual IAnswerRepository Answers =>
         _answers ??= new AnswerRepository(UOWDbContext, new AnswerMapper(_mapper));
