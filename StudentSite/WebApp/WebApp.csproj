@@ -6,6 +6,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <UserSecretsId>aspnet-WebApp-668FBDD8-12E0-4A99-A730-05540BB77E86</UserSecretsId>
         <GenerateDocumentationFile>true</GenerateDocumentationFile> <!-- generate XML for swagger doc -->
+        <NoWarn>$(NoWarn);1591</NoWarn>
     </PropertyGroup>
     
     <ItemGroup>
