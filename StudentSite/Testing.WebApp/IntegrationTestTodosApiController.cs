@@ -7,6 +7,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using App.Public.DTO.v1;
 using App.Public.DTO.v1.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -59,7 +60,236 @@ public class IntegrationTestTodosApiController : IClassFixture<CustomWebApplicat
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
     
+   [Fact]
+    public async Task Main_flow_Quizflow()
+    {
+        //REGISTER
+        var jwt = "";
+        var refreshToken = "";
+        // Arrange
+        var uri = "/api/v1/identity/Account/Register/";
+        var contentType = new MediaTypeWithQualityHeaderValue
+            ("application/json");
+        _client.DefaultRequestHeaders.Accept.Add(contentType);
+        Guid guidIdUser = Guid.NewGuid();
+        var user = new App.Public.DTO.v1.Identity.Register()
+        {
+            Id = guidIdUser,
+            Email = "test22@test.com",
+            Firstname = "Testame",
+            Lastname = "Tester",
+            Password = "123456"
+        };
+        
+        string userInfo = JsonConvert.SerializeObject(user);
+        var contentData = new StringContent(userInfo, 
+            Encoding.UTF8, "application/json");
+        
+        HttpResponseMessage response =  _client.PostAsync(uri, contentData).Result;
 
+        response.EnsureSuccessStatusCode();
+        
+        if (response.IsSuccessStatusCode)
+        {
+            var content = await response.Content.ReadAsStringAsync();
+            var resp = JsonConvert.DeserializeObject<JwtResponse>(content);
+            jwt = resp!.Token;
+            refreshToken = resp!.RefreshToken;
+            _jwt = resp.Token;
+            _refreshToken = resp.RefreshToken;
+        }
+        // ASSERT
+        Assert.NotEmpty(jwt);
+        Assert.NotEmpty(refreshToken);
+        
+        //refreshtoken
+        var refreshTokenModel = new RefreshTokenModel()
+        {
+            Jwt = jwt,
+            RefreshToken = refreshToken
+        };
+        string jwtTokenInfo = JsonConvert.SerializeObject(refreshTokenModel);
+
+        uri = "/api/v1/identity/account/refreshtoken";
+        contentData = new StringContent(jwtTokenInfo, 
+            Encoding.UTF8, "application/json");
+        response =  _client.PostAsync(uri, contentData).Result;
+
+        response.EnsureSuccessStatusCode();
+        
+        if (response.IsSuccessStatusCode)
+        {
+            var content = await response.Content.ReadAsStringAsync();
+            var resp = JsonConvert.DeserializeObject<JwtResponse>(content);
+            jwt = resp!.Token;
+            refreshToken = resp!.RefreshToken;
+            _jwt = resp.Token;
+            _refreshToken = resp.RefreshToken;
+        }
+        // ASSERT
+        Assert.NotEmpty(jwt);
+        Assert.NotEmpty(refreshToken);
+        
+        // test JWT - Access todos page by jwt
+        uri = "/api/v1/Subjects/GetSubjects";
+
+        _client.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue("Bearer",
+                _jwt);
+
+        var getSubjectsResponse = await _client.GetAsync(uri);
+
+        var getSubjectsNew = await getSubjectsResponse.Content.ReadAsStringAsync();
+        var deserializedSubjectsNew = JsonConvert
+            .DeserializeObject<List<App.Public.DTO.v1.Subject>>(getSubjectsNew)!;
+        Assert.True("Math" == deserializedSubjectsNew[0].Name);
+        _testOutputHelper.WriteLine(deserializedSubjectsNew[0].Name);
+        
+        
+        uri = "/api/v1/Subjects/GetSubject/"+deserializedSubjectsNew[0].Id;
+        
+        _client.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue("Bearer",
+                _jwt);
+
+        var getSubjectsResponseWithQuizzes = await _client.GetAsync(uri);
+
+        // ASSERT
+        getSubjectsResponseWithQuizzes.EnsureSuccessStatusCode();
+        
+        getSubjectsNew = await getSubjectsResponseWithQuizzes.Content.ReadAsStringAsync();
+        var deserializedOneTopic = JsonConvert
+            .DeserializeObject<App.Public.DTO.v1.Subject>(getSubjectsNew)!;
+        //TEST IF DATA IS THERE
+        var firstQuiz = deserializedOneTopic.Quizzes!.First();
+        _testOutputHelper.WriteLine(firstQuiz.Name);
+        
+        Assert.NotNull(deserializedOneTopic);
+        Assert.True("Math Quiz" == firstQuiz.Name);
+        var quizForm = new QuizForm()
+        {
+            QuizId = firstQuiz.Id,
+        };
+        
+        uri = "/api/v1/UserQuiz/PostUserQuiz";
+
+        var postUserQuizResponse = await _client.PostAsync(
+            uri,
+            new StringContent(
+                JsonConvert.SerializeObject(quizForm),
+                Encoding.UTF8,
+                "application/json"));
+
+        postUserQuizResponse.EnsureSuccessStatusCode();
+
+        var getUserQuiz = await postUserQuizResponse.Content.ReadAsStringAsync();
+        var deserializedUserQuiz = JsonConvert
+            .DeserializeObject<App.Public.DTO.v1.UserQuiz>(getUserQuiz)!;
+        _testOutputHelper.WriteLine(deserializedUserQuiz.Id.ToString());
+        
+        uri = "/api/v1/UserChoice/PostGetUserChoice";
+        
+        var userQuizForm = new UserQuizForm()
+        {
+            UserQuizId = deserializedUserQuiz.Id
+        };
+        var postGetUserChoiceResponse = await _client.PostAsync(
+            uri,
+            new StringContent(
+                JsonConvert.SerializeObject(userQuizForm),
+                Encoding.UTF8,
+                "application/json"));
+
+        postGetUserChoiceResponse.EnsureSuccessStatusCode();
+        
+        _client.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue("Bearer",
+                _jwt);
+        
+        var getPostGetUserChoice = await postGetUserChoiceResponse.Content.ReadAsStringAsync();
+        var deserializedPostGetUserChoice = JsonConvert
+            .DeserializeObject<App.Public.DTO.v1.UserChoice>(getPostGetUserChoice)!;
+        _testOutputHelper.WriteLine(deserializedPostGetUserChoice.QuestionId.ToString());
+        
+        
+        uri = "/api/v1/Question/GetQuestion/"+deserializedPostGetUserChoice.QuestionId;
+        
+        _client.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue("Bearer",
+                _jwt);
+
+        var getQuestionWithAnswers = await _client.GetAsync(uri);
+
+        // ASSERT
+        getQuestionWithAnswers.EnsureSuccessStatusCode();
+        
+        var getQuestionAnswersRead = await getQuestionWithAnswers.Content.ReadAsStringAsync();
+        var deserializedQuestionAnswers = JsonConvert
+            .DeserializeObject<App.Public.DTO.v1.Question>(getQuestionAnswersRead)!;
+        //TEST IF DATA IS THERE
+        _testOutputHelper.WriteLine(deserializedQuestionAnswers.QuestionText);
+        Assert.NotNull(deserializedQuestionAnswers);
+        Assert.True("5+5?" == deserializedQuestionAnswers.QuestionText);
+        
+        ///Submit user answer
+        uri = "/api/v1/UserChoice/PostUserChoice";
+        var userAnswerId = deserializedQuestionAnswers.Answers!.First().Id;
+        var userChoice = new UserChoice()
+        {
+            QuizId = firstQuiz.Id,
+            UserQuizId = deserializedUserQuiz.Id,
+            QuestionId = deserializedQuestionAnswers.Id,
+            AnswerId = userAnswerId
+        };
+        var postPostUserChoice = await _client.PostAsync(
+            uri,
+            new StringContent(
+                JsonConvert.SerializeObject(userChoice),
+                Encoding.UTF8,
+                "application/json"));
+
+        postPostUserChoice.EnsureSuccessStatusCode();
+        
+        uri = "/api/v1/UserChoice/PostGetUserChoice";
+        
+
+        postGetUserChoiceResponse = await _client.PostAsync(
+            uri,
+            new StringContent(
+                JsonConvert.SerializeObject(userQuizForm),
+                Encoding.UTF8,
+                "application/json"));
+
+        postGetUserChoiceResponse.EnsureSuccessStatusCode();
+        
+         getPostGetUserChoice = await postGetUserChoiceResponse.Content.ReadAsStringAsync();
+         deserializedPostGetUserChoice = JsonConvert
+            .DeserializeObject<App.Public.DTO.v1.UserChoice>(getPostGetUserChoice)!;
+        _testOutputHelper.WriteLine(deserializedPostGetUserChoice.QuestionId.ToString());
+        
+        uri = "/api/v1/Question/GetQuestion/"+deserializedPostGetUserChoice.QuestionId;
+        
+        _client.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue("Bearer",
+                _jwt);
+
+         getQuestionWithAnswers = await _client.GetAsync(uri);
+         Assert.Equal(HttpStatusCode.NotFound, getQuestionWithAnswers.StatusCode);
+         
+         
+         // then go to results page by UserQuizId
+         uri = "/api/v1/UserQuiz/GetUserQuiz/"+deserializedUserQuiz.Id;
+        
+         _client.DefaultRequestHeaders.Authorization =
+             new AuthenticationHeaderValue("Bearer",
+                 _jwt);
+
+         getQuestionWithAnswers = await _client.GetAsync(uri);
+         Assert.Equal(HttpStatusCode.OK, getQuestionWithAnswers.StatusCode);
+        
+    }
+    
+    
     [Fact]
     public async Task Main_flow_Todos()
     {

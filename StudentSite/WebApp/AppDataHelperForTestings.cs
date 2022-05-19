@@ -95,7 +95,7 @@ public class AppDataHelperForTesting
 
                 }
             }
-            
+            //add topic for testing
             var f = new Topic()
             {
                 Id = new Guid(),
@@ -115,6 +115,72 @@ public class AppDataHelperForTesting
             context.Topics.Add(f);
             context.SaveChanges();
             
+            // ADD quiz stuff
+            var subject = new Subject()
+            {
+                Id = new Guid(),
+                Name =
+                {
+                    ["en-GB"] = "Math",
+                    ["et-EE"] = "Matemaatika",
+                    ["ru-RU"] = "Математика",
+                },
+                Description =
+                {
+                    ["en-GB"] = "Math subject",
+                    ["et-EE"] = "Matematika aine",
+                    ["ru-RU"] = "Математика предмет",
+                },
+            };
+
+            var quiz = new Quiz()
+            {
+                Name =
+                {
+                    ["en-GB"] = "Math Quiz",
+                    ["et-EE"] = "Matemaatika Kviz",
+                    ["ru-RU"] = "Математика квиз",
+                },
+                Description =
+                {
+                    ["en-GB"] = "Math basics quiz",
+                    ["et-EE"] = "Matematika baas kviz",
+                    ["ru-RU"] = "Математика базовый квиз",
+                },
+                Subject = subject,
+            };
+
+            var question1 = new Question()
+            {
+                QuestionText =
+                {
+                    ["en-GB"] = "5+5?",
+                },
+                Quiz = quiz,
+            };
+
+            var answerOne = new Answer()
+            {
+                AnswerText =
+                {
+                    ["en-GB"] = "10",
+                },
+                Question = question1,
+                IsCorrect = true,
+            };
+            var answerTwo = new Answer()
+            {
+                AnswerText =
+                {
+                    ["en-GB"] = "15",
+                },
+                Question = question1,
+                IsCorrect = false,
+            };
+            
+            context.Answers.Add(answerOne);
+            context.Answers.Add(answerTwo);
+            context.SaveChanges();
         }
         
     }
