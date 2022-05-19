@@ -1,5 +1,5 @@
 #grab the sdk image. create a name "build"
-FROM mcr.microsoft.com/dotnet/sdk:latest AS build
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /app
 EXPOSE 80
 
@@ -67,9 +67,10 @@ WORKDIR /app/WebApp
 #compile the app with Release option and put files into dir "out"
 RUN dotnet publish -c Release -o out
 
-FROM mcr.microsoft.com/dotnet/core/aspnet:latest AS runtime
+FROM mcr.microsoft.com/dotnet/aspnet:latest AS runtime
 WORKDIR /app
 EXPOSE 80
+ENV ConnectionStrings:NpgsqlConnection="Host=host.docker.internal;Port=5432;Username=postgres;Password=postgres;database=StudentSite"
 #copy files from previous image (the "build")
 COPY --from=build /app/WebApp/out ./
 
