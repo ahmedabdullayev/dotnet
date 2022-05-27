@@ -23,6 +23,12 @@ public class TodoRepository: BaseEntityRepository<App.DAL.DTO.Todo, App.Domain.T
         return (await query.ToListAsync()).Select(x => Mapper.Map(x)!);
     }
 
+    public override Todo Add(Todo entity)
+    {
+        
+        return base.Add(entity);
+    }
+
     public Todo AddWithUser(Todo entity, Guid userQuizId)
     {
         entity.AppUserId = userQuizId;

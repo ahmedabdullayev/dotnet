@@ -9,6 +9,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using App.Public.DTO.v1;
 using App.Public.DTO.v1.Identity;
+using App.Public.DTO.v1.Testing;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Newtonsoft.Json;
@@ -75,8 +76,8 @@ public class IntegrationTestTodosApiController : IClassFixture<CustomWebApplicat
         var user = new App.Public.DTO.v1.Identity.Register()
         {
             Id = guidIdUser,
-            Email = "test22@test.com",
-            Firstname = "Testame",
+            Email = "test2244@test.com",
+            Firstname = "Tes444tame",
             Lastname = "Tester",
             Password = "123456"
         };

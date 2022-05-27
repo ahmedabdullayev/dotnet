@@ -1,4 +1,4 @@
-namespace App.Public.DTO.v1;
+namespace App.Public.DTO.v1.Testing;
 
 public class UserQuizForm
 {
