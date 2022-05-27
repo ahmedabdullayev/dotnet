@@ -41,7 +41,7 @@ public class EnrollmentController: ControllerBase
     [ProducesResponseType(typeof(IEnumerable<App.Public.DTO.v1.Enrollment>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IEnumerable<App.Public.DTO.v1.Enrollment>>> GetEnrollmentsStudentAccepted()
     {
-        return Ok((await _uow.Enrollments.GetAllAsyncWithAcceptedStudents()).Select(a => _mapper.MapToPublic(a)));
+        return Ok((await _uow.Enrollments.GetAllAsyncWithAcceptedStudents(User.GetUserId())).Select(a => _mapper.MapToPublic(a)));
     }
     
     [AllowAnonymous]

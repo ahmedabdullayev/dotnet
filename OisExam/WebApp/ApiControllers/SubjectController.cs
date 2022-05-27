@@ -12,7 +12,7 @@ namespace WebApp.ApiControllers;
 [ProducesResponseType(StatusCodes.Status401Unauthorized)]
 [Consumes("application/json")]
 [Produces("application/json")]
-[Authorize(Roles = "admin",AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+[Authorize(Roles = "admin, student, teacher",AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 public class SubjectController : ControllerBase
 {
     private readonly AppUOW _uow;

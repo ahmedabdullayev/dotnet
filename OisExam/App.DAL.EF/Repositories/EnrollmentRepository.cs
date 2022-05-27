@@ -40,7 +40,7 @@ public class EnrollmentRepository : BaseRepository<App.Domain.Enrollment, AppDbC
         return await query.ToListAsync();
     }
     
-    public async Task<IEnumerable<Enrollment>> GetAllAsyncWithAcceptedStudents(bool noTracking = true)
+    public async Task<IEnumerable<Enrollment>> GetAllAsyncWithAcceptedStudents(Guid teacherId, bool noTracking = true)
     {
         var query = RepoDbSet.AsQueryable();
     
@@ -48,6 +48,11 @@ public class EnrollmentRepository : BaseRepository<App.Domain.Enrollment, AppDbC
         {
             query = query.AsNoTracking();
         }
+
+        var semestersGuids = query.Where(m => m.AppUserId == teacherId).Select(m => m.SemesterId).ToList();
+        var subjectGuids = query.Where(m => m.AppUserId == teacherId).Select(m => m.SubjectId).ToList();
+
+        query = query.Where(m => semestersGuids.Contains(m.SemesterId) && subjectGuids.Contains(m.SubjectId));
         query = query.Where(m => m.IsAccepted && m.IsTeacher == false)
             .Include(p => p.AppUser)
                 .Include(s => s.Subject)
